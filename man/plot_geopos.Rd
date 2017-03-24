@@ -85,7 +85,7 @@ plot_geopos(csv_file, add=TRUE) ## show tracks as scatter plot
 ## example 2) probability surfaces of horizontal tracks from nc-file:
 ## this can take some time as it inlcudes time consuming data processing
 nc_file <- system.file("example_files/15P1019-104659-1-GPE3.nc",package="RchivalTag") 
-plot_geopos(nc_file)
+# plot_geopos(nc_file)
 
 }
 

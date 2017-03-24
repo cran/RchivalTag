@@ -31,7 +31,7 @@ a numeric vector, defining the depth and/or temperature breakpoints of the histo
 }
 
 \item{split_by}{
-Name of the logical vector by which TaD/TaT data shall be splitted (e.g. day.time).
+Name of the logical vector by which TaD/TaT data shall be splitted (e.g. daytime; see \link{classify_DayTime}).
 }
 
 \item{aggregate_by}{
@@ -71,6 +71,17 @@ hist_tat(tat$TAT$merged, do_mid.ticks = FALSE)
 
 ## convert 1c) DepthTS & TemperatureTS data to daily TAD & TAT frequencies:
 ts2histos(ts_df, tad_breaks = tad_breaks, tat_breaks = tat_breaks)
+
+## convert 1d) back-to-back histogram showing day vs night TAD frequencies:
+ts_df$Lat <- 4; ts_df$Lon=42.5 ## required geolocations to estimate daytime
+ts_df$date.long <- strptime(paste(ts_df$Day,ts_df$Time),"\%d-\%B-\%Y \%H:\%M:\%S")
+head(ts_df)
+ts_df2 <- classify_DayTime(get_DayTimeLimits(ts_df)) # estimate daytime
+head(ts_df2)
+
+ts2histos(ts_df2, tad_breaks = tad_breaks,split_by = "daytime")
+hist_tad(ts_df2, bin_breaks = tad_breaks,split_by = "daytime", do_mid.ticks = FALSE)
+
 
 ## example 2) rebin daily TAD frequencies:
 tad <- ts2histos(ts_df, tad_breaks = tad_breaks)

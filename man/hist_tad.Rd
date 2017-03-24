@@ -68,7 +68,7 @@ a vector defining the limits (x1,x2) of the x-axis, by default c(0,100). However
 }
 
 \item{split_by}{
-Name of the logical vector by which TaD data should be splitted (e.g. day.time).
+Name of the logical vector by which TaD data should be splitted (e.g. daytime; see \link{classify_DayTime}).
 }
 
 \item{split_levels, xlab2}{
@@ -161,6 +161,17 @@ hist_tat(tat$TAT$merged, do_mid.ticks = FALSE)
 ## convert 1c) DepthTS & TemperatureTS data to daily TAD & TAT frequencies:
 ts2histos(ts_df, tad_breaks = tad_breaks, tat_breaks = tat_breaks)
 
+## convert 1d) back-to-back histogram showing day vs night TAD frequencies:
+ts_df$Lat <- 4; ts_df$Lon=42.5 ## required geolocations to estimate daytime
+ts_df$date.long <- strptime(paste(ts_df$Day,ts_df$Time),"\%d-\%B-\%Y \%H:\%M:\%S")
+head(ts_df)
+ts_df2 <- classify_DayTime(get_DayTimeLimits(ts_df)) # estimate daytime
+head(ts_df2)
+
+ts2histos(ts_df2, tad_breaks = tad_breaks,split_by = "daytime")
+hist_tad(ts_df2, bin_breaks = tad_breaks,split_by = "daytime", do_mid.ticks = FALSE)
+
+
 ## example 2) rebin daily TAD frequencies:
 tad <- ts2histos(ts_df, tad_breaks = tad_breaks)
 tad2 <- rebin_histos(hist_list = tad, tad_breaks = tad_breaks[c(1:3,6:12)])
@@ -168,6 +179,7 @@ par(mfrow=c(2,2))
 hist_tad(tad, do_mid.ticks = FALSE) ## example for multiple individuals
 hist_tad(tad$TAD$merged, do_mid.ticks = FALSE)
 hist_tad(tad$TAD$merged, bin_breaks = tad_breaks[c(1:3,6:12)]) ## from inside hist_tad
+
 
 ## example 3) read, merge and plot TAD frequency data from several files:
 ## part I - read histogram data from two files:

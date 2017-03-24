@@ -187,7 +187,7 @@ hist_tad <- function(df,
         
         xticks <- pretty(xlim)
         xlabels <- abs(xticks)
-        ylabels <- rev(bin_prefix)
+        ylabels <- rev(bin_breaks)
         #       if(!labeling){
         #         xlabels <- rep('', length(xlabels))
         #         ylabels <- rep('', length(ylabels))
@@ -203,7 +203,6 @@ hist_tad <- function(df,
           axis(2, pos=xlim[1]+yaxis.pos, at=(0.5:(ncol(raw)-0.5)), lwd="", labels=ylabels2a, las=1)
           
         }else{
-          
           axis(2, pos=xlim[1]+yaxis.pos, at=(0:ncol(raw)), c("", ylabels), las=1)
         }      
         
