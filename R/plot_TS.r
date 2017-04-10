@@ -1,7 +1,7 @@
 
 empty.plot_TS <- function(xlim, ylim, xticks_interval, ylab="", xlab="Time (UTC)", las=1, xaxs="i", yaxs="i", cex=1, plot_box=TRUE, bty="l",...){
   
-  if(class(xlim)[1] == 'Date'){
+  if(class(xlim)[1] == 'Date' | nchar(as.character(xlim[1])) == 10){
     xlim <- as.POSIXct(paste(xlim, '00:00:00'), tz="UTC")
     if(length(xlim) == 1) xlim <- c(xlim, xlim)
     xlim[2] <- xlim[2]+24*60*60
@@ -59,7 +59,9 @@ plot_DepthTS <- plot_TS <- function(df, y="Depth", xlim, ylim, xticks_interval,
   ### fill potential data gaps
   tstep <- as.numeric(df$date.long[2])-as.numeric(df$date.long[1])
   add0 <- data.frame(date.long=seq(df$date.long[1],tail(df$date.long, 1), by=tstep))
+  df$date.long <- as.character(df$date.long); add0$date.long <- as.character(add0$date.long)
   df <- merge(df, add0, by="date.long",all=T)
+  df$date.long <- strptime(df$date.long, format = "%Y-%m-%d %H:%M:%S")
   df$date <- as.Date(df$date.long)
   
   if(plot_DayTimePeriods){
@@ -81,7 +83,7 @@ plot_DepthTS <- plot_TS <- function(df, y="Depth", xlim, ylim, xticks_interval,
   }
   
   if(!missing(xlim)){
-    if(class(xlim)[1] == 'Date'){
+    if(class(xlim)[1] == 'Date' | nchar(as.character(xlim[1])) == 10){
       xlim <- as.POSIXct(paste(xlim, '00:00:00'), tz="UTC")
       if(length(xlim) == 1) xlim <- c(xlim, xlim)
       xlim[2] <- xlim[2]+24*60*60
@@ -92,8 +94,9 @@ plot_DepthTS <- plot_TS <- function(df, y="Depth", xlim, ylim, xticks_interval,
     df <- df[which(df$date.long >= xlim[1] & df$date.long <= xlim[2]),]
   }else{
     xlim <- range(df$date.long)
+    xlim <- .fact2Date.long(xlim,tz = "UTC")
   }
-  
+    
   if(!missing(ylim)){
   }else{
     ylim <- range(df[[y]],na.rm=TRUE)
@@ -102,8 +105,9 @@ plot_DepthTS <- plot_TS <- function(df, y="Depth", xlim, ylim, xticks_interval,
   
   
   ### plot TS:
-  par(las=las, yaxs=yaxs, xaxs=xaxs,...)
+  par(las=las, yaxs=yaxs, xaxs=xaxs,...)  
   plot(df$date.long, df[[y]], axes=FALSE, lwd=0, cex=0, xlab="", ylab="", xlim=xlim, ylim=ylim, ...)
+  
   
   xticks <- seq(xlim[1], xlim[2], by=1)#21600)
   days <- unique(as.Date(xticks))

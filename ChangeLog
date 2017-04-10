@@ -1,5 +1,8 @@
 RchivalTag versions
 
+RchivalTag_0.0.3 -- April 10, 2017 (Robert Bauer)
+	- small bugs fixed in plot_TS/plot_DepthTS and read_PDT
+
 RchivalTag_0.0.2 -- March 22, 2017 (Robert Bauer)
 	- small bug in hist_tad/hist_tat functions fixed
         - adding example on back-to-back histogram for day vs night TaD-data (see: ?hist_tad)

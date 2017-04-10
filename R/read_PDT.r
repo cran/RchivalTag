@@ -60,13 +60,14 @@ read_PDT <- function(pdt_file, sep=","){
   # check if date conversion worked out
   ii <- which(is.na(pdt_all$date))
   if(length(ii) > 0){
-    stop('Column "Date" of pdt_file(s):\n',paste(pdt_all$pdt_file[ii],collapse=',\n'),
-         '\n not in correct format (%H:%M:%S %d-%b-%Y). Please revise.')
+    warning("Column 'Date' of pdt_file(s):\n",paste(unique(pdt_all$pdt_file[ii]),collapse=",\n"),
+         "\nnot in correct format (%H:%M:%S %d-%b-%Y).\nStandard 'date' and 'date.long'-vectors could not be constructed!")
+  }else{
+    pdt_all$Date <- c()
   }
   
   pdt_all <- pdt_all[which(!is.na(pdt_all$Depth)),]
   pdt_all$MeanPDT <- (pdt_all$MinTemp+pdt_all$MaxTemp)/2
-  pdt_all$Date <- c()
   
   return(pdt_all)
 }
