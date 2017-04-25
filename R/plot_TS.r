@@ -56,8 +56,32 @@ plot_DepthTS <- plot_TS <- function(df, y="Depth", xlim, ylim, xticks_interval,
   
   if(!("date.long" %in% names(df))) stop('no "date.long" vector provided! please revise.')
   
+  if(!missing(xlim)){
+    if(class(xlim)[1] == 'Date' | nchar(as.character(xlim[1])) == 10){
+      xlim <- as.POSIXct(paste(xlim, '00:00:00'), tz="UTC")
+      if(length(xlim) == 1) xlim <- c(xlim, xlim)
+      xlim[2] <- xlim[2]+24*60*60
+    }
+    xlim <- .fact2Date.long(xlim,tz = "UTC")
+    if(length(xlim) == 1) xlim <- c(xlim, xlim[1]+24*60*60)
+    if(length(xlim) > 2) xlim <- range(xlim)
+    df <- df[which(df$date.long >= xlim[1] & df$date.long <= xlim[2]),]
+  }else{
+    xlim <- range(df$date.long)
+    xlim <- .fact2Date.long(xlim,tz = "UTC")
+  }
+  
+  if(!missing(ylim)){
+  }else{
+    ylim <- range(df[[y]],na.rm=TRUE)
+  }
+  if(y == "Depth" & max(abs(ylim) == max(ylim))) ylim <- rev(range(c(0,max(ylim))))
+  
+  
   ### fill potential data gaps
+  df <- df[which(!is.na(df[[y]])),]
   tstep <- as.numeric(df$date.long[2])-as.numeric(df$date.long[1])
+  if(tstep == 0) stop("time step between first valid 'y'-records is 0. please revise!")
   add0 <- data.frame(date.long=seq(df$date.long[1],tail(df$date.long, 1), by=tstep))
   df$date.long <- as.character(df$date.long); add0$date.long <- as.character(add0$date.long)
   df <- merge(df, add0, by="date.long",all=T)
@@ -82,28 +106,6 @@ plot_DepthTS <- plot_TS <- function(df, y="Depth", xlim, ylim, xticks_interval,
     df$date <- as.Date(df$date.long)
   }
   
-  if(!missing(xlim)){
-    if(class(xlim)[1] == 'Date' | nchar(as.character(xlim[1])) == 10){
-      xlim <- as.POSIXct(paste(xlim, '00:00:00'), tz="UTC")
-      if(length(xlim) == 1) xlim <- c(xlim, xlim)
-      xlim[2] <- xlim[2]+24*60*60
-    }
-    xlim <- .fact2Date.long(xlim,tz = "UTC")
-    if(length(xlim) == 1) xlim <- c(xlim, xlim[1]+24*60*60)
-    if(length(xlim) > 2) xlim <- range(xlim)
-    df <- df[which(df$date.long >= xlim[1] & df$date.long <= xlim[2]),]
-  }else{
-    xlim <- range(df$date.long)
-    xlim <- .fact2Date.long(xlim,tz = "UTC")
-  }
-    
-  if(!missing(ylim)){
-  }else{
-    ylim <- range(df[[y]],na.rm=TRUE)
-  }
-  if(y == "Depth" & max(abs(ylim) == max(ylim))) ylim <- rev(range(c(0,max(ylim))))
-  
-  
   ### plot TS:
   par(las=las, yaxs=yaxs, xaxs=xaxs,...)  
   plot(df$date.long, df[[y]], axes=FALSE, lwd=0, cex=0, xlab="", ylab="", xlim=xlim, ylim=ylim, ...)
@@ -120,35 +122,40 @@ plot_DepthTS <- plot_TS <- function(df, y="Depth", xlim, ylim, xticks_interval,
   
   #### plot daytime periods:
   if(plot_DayTimePeriods){
-    dawn.set <- paste0('dawn.', twilight.set)
-    dusk.set <- paste0('dusk.', twilight.set)
-    if(!all(c(dawn.set, dusk.set, 'sunrise','sunset') %in% names(df))){
-      warning("not all required day period information found. calling function: 'get_DayTimeLimits'. 
+      dawn.set <- paste0('dawn.', twilight.set)
+      dusk.set <- paste0('dusk.', twilight.set)
+      if(all(c(dawn.set, dusk.set, 'sunrise','sunset') %in% names(df)) | all(c('date.long','Lon','Lat') %in% names(df))){
+      if(!all(c(dawn.set, dusk.set, 'sunrise','sunset') %in% names(df))){
+        warning("not all required day period information found. calling function: 'get_DayTimeLimits'. 
             Consider to run this function before calling 'plot_TS' to increase performance speed.")
-      df <- get_DayTimeLimits(df) # get sunrise, sunset and dusk/dawn information
-    }
-    df$dawn <- df[[dawn.set]]
-    df$dusk <- df[[dusk.set]]
-    
-    rect(xlim[1], ylim[1], xlim[2], ylim[2], col="grey", lwd=0)
-    sunrise <- sunset <- dawn <- dusk <- NA
-    for(d in days){
-      k <- df[which(df$date == d), ]
-      if(nrow(k) > 0){
-        dusk <- mean(k$dusk)
-        dawn <- mean(k$dawn)
-        sunrise <- mean(k$sunrise)
-        sunset <- mean(k$sunset)
-      }else{
-        sunrise <- sunrise+24*60*60
-        sunset <- sunset+24*60*60
-        dawn <- dawn+24*60*60
-        dusk <- dusk+24*60*60
-      }      
-      rect(sunrise, ylim[1], sunset, ylim[2], col="white", lwd=0)
-      rect(dawn, ylim[1], sunrise, ylim[2], col="grey90", lwd=0)
-      rect(sunset, ylim[1], dusk, ylim[2], col="grey90", lwd=0)
-      dawn.dusk <- F
+        df <- get_DayTimeLimits(df) # get sunrise, sunset and dusk/dawn information
+      }
+      df$dawn <- df[[dawn.set]]
+      df$dusk <- df[[dusk.set]]
+      
+      rect(xlim[1], ylim[1], xlim[2], ylim[2], col="grey", lwd=0)
+      sunrise <- sunset <- dawn <- dusk <- NA
+      for(d in days){
+        k <- df[which(df$date == d), ]
+        if(nrow(k) > 0){
+          dusk <- mean(k$dusk)
+          dawn <- mean(k$dawn)
+          sunrise <- mean(k$sunrise)
+          sunset <- mean(k$sunset)
+        }else{
+          sunrise <- sunrise+24*60*60
+          sunset <- sunset+24*60*60
+          dawn <- dawn+24*60*60
+          dusk <- dusk+24*60*60
+        }      
+        rect(sunrise, ylim[1], sunset, ylim[2], col="white", lwd=0)
+        rect(dawn, ylim[1], sunrise, ylim[2], col="grey90", lwd=0)
+        rect(sunset, ylim[1], dusk, ylim[2], col="grey90", lwd=0)
+        dawn.dusk <- F
+      }
+    }else{
+      warning('no geolocation data (Lon, Lat) or daytime period information provided! setting plot_DayTimePeriods to FALSE')
+      plot_DayTimePeriods <- F
     }
   }
   df$dusk <- df$dawn <- c()

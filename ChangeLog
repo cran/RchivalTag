@@ -1,5 +1,8 @@
 RchivalTag versions
 
+RchivalTag_0.0.4 -- April 25, 2017 (Robert Bauer)
+	- improving performance (speed) of plot_TS/plot_DepthTS
+
 RchivalTag_0.0.3 -- April 10, 2017 (Robert Bauer)
 	- small bugs fixed in plot_TS/plot_DepthTS and read_PDT
 
