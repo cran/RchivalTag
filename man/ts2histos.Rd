@@ -40,6 +40,30 @@ character vector defining the columns by which the tagging data should be aggreg
 
 }
 
+\value{A list-of-lists containing the loaded histogram data. Lists of TAD and TAT data are distinguished at the first nesting level. Further sublists include the \code{bin_breaks} and \link{data.frame}s of the generated histogram data. \strong{The data.frames of the histogram data thereby also contain average (avg) and standard deviation (SD) of depth and temperature values that are likewise directly estimated from time series data}, unlike \link{read_histos}-generated values that are estimated from the histogram data. The accuracy of latter estimates thus depends on the number and selection of bin breaks (see statistics-example in \link{read_histos}).
+
+$ TAD:List\cr
+  ..$ merged  : List of 2\cr
+  .. ..$ bin_breaks: num\cr 
+  .. ..$ df        : data.frame \cr
+  .. .. ..$ DeployID \cr
+  .. .. ..$ Ptt \cr
+  .. .. ..$ date.long \cr
+  .. .. ..$ date \cr
+  .. .. ..$ Bin1 \cr
+  ..
+  .. .. ..$ Bin? (up to number of bin breaks)\cr
+  .. .. ..$ avg (average depth estimated!! from histogram data)\cr
+  .. .. ..$ SD (average depth estimated!! from histogram data) \cr
+
+
+$ TAT:List\cr 
+  ..$ merged  : List of 2\cr
+  .. ..$ bin_breaks: num\cr 
+  .. ..$ df        : data.frame (with columns as above)\cr 
+
+}
+
 
 
 \seealso{\link{read_histos}, \link{hist_tad}, \link{merge_histos}} 
@@ -90,7 +114,6 @@ par(mfrow=c(2,2))
 hist_tad(tad, do_mid.ticks = FALSE) ## example for multiple individuals
 hist_tad(tad$TAD$merged, do_mid.ticks = FALSE)
 hist_tad(tad$TAD$merged, bin_breaks = tad_breaks[c(1:3,6:12)]) ## from inside hist_tad
-
 
 
 }

@@ -41,7 +41,9 @@ ts2histos <- function(ts_df, tad_breaks=NULL, tat_breaks=NULL, split_by=NULL, ag
         names(sm) <- paste0(bin_prefix, 1:ncol(sm))
         #             sm$coverage_24h <- 100*sum(h$counts)/(24*60/(tstep/60))
         sm$nrec <- sum(h$counts)
-        sm <- cbind(NumBins=length(bin_breaks),Sum=100,sm)
+        avg <- mean(x[[field]],na.rm=T)
+        SD <- sd(x[[field]],na.rm=T)
+        sm <- cbind(NumBins=length(bin_breaks),Sum=100,sm,avg=avg,sd=SD)
       })
       out <- rbind(out,  sm.df)
       #         }

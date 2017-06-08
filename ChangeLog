@@ -1,5 +1,8 @@
 RchivalTag versions
 
+RchivalTag_0.0.5 -- June 8, 2017 (Robert Bauer)
+	- adding average and standard deviation estimation for depth and temperature values insisde the read_histos and ts2histos functions
+
 RchivalTag_0.0.4 -- April 25, 2017 (Robert Bauer)
 	- improving performance (speed) of plot_TS/plot_DepthTS
 

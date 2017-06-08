@@ -1,10 +1,10 @@
-0babae57dff471411c39bf4ef16e19f1 *ChangeLog
-7ec12fc84171dee6dd874aaa612913a3 *DESCRIPTION
+945aa68c1b9d7a4d8ad943bc1eeb1e29 *ChangeLog
+0007eb65be4967d918c1e99192d06838 *DESCRIPTION
 8b43c3895e01857f02fedd5ed61ff8a3 *NAMESPACE
 3e611abed9a9cac153c07f2681682a8e *R/bin_TempTS.r
 4496a3299a5b651e488ff184fb363094 *R/get_DaytTimeLimits.r
 5a9b700d9095f7dabdb593f7ceef78fc *R/get_thermalstrat.r
-d0238a97d31e3bc0bb39758ffea3a359 *R/hidden_functions.r
+9281c3eeba89e7956ccd608dbe37b449 *R/hidden_functions.r
 ac03eff18ad7382bce1a16ef3e447dfa *R/hist_tad.r
 983d14437b0aabbcaba53a1669868b7d *R/image_TempDepthProfiles.r
 2488fc005f517758e20112941f5bbcaa *R/interpolate_TempDepthProfiles.r
@@ -12,10 +12,10 @@ e28c2a2a8bd12c5abacc6c51f9eee033 *R/plot_TS.r
 2f9e8ba0d608fcfe6c2659144482860d *R/plot_errorbars.r
 a64d0ede8100a59f1bd71108932d4c30 *R/plot_geopos.r
 3cb18a2b337441ed7d8450742ac72ac8 *R/read_PDT.r
-ee79db69ed156d837cfb299d11475653 *R/read_histos.r
+e362f87ea5523a988fe8ced9fb0ed9bf *R/read_histos.r
 57d180cfc03aa9be75938c0f018ef197 *R/tad_summary.r
-976cabc1b75f6dbea28566ad6cfa031c *R/ts2histos.r
-20e45627fcb5b7d72fd79426abb28f29 *inst/doc/RchivalTag.pdf
+425a0884decdb20bd58e6bc15eb63e1d *R/ts2histos.r
+4da50e452a8f5ed5e4bb6b99f6360aea *inst/doc/RchivalTag.pdf
 5ed8535044dcec09af091dca0617ac41 *inst/example_files/104659-Histos.csv
 14919538772cfbcc8dde94b889ede6f9 *inst/example_files/104659-PDTs.csv
 ec53f903951050e6c4f96a0b7be076b8 *inst/example_files/104659-Series.csv
@@ -37,6 +37,6 @@ fa3b7ffb000adad1753f9538c59f55df *man/hist_tad.Rd
 e4a4857d2d9b80ec016faae515d881f7 *man/plot_TS.Rd
 3f96d82782905a5d9f87894034ab6e92 *man/plot_geopos.Rd
 948318f09b613af552f4d887f67a794a *man/read_PDT.Rd
-4ff61484a4a2ecfb0264d10b1933e6d1 *man/read_histos.Rd
-cf2de73b343be4014402c023a8fb54a2 *man/ts2histos.Rd
+1d41623f8b790451fc7617e197718285 *man/read_histos.Rd
+2d5e6915b7c43315df150ba1721e75ee *man/ts2histos.Rd
 1e725d644d978f8637cd1e90c560bbe2 *man/unmerge_histos.Rd

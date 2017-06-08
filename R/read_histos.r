@@ -53,9 +53,12 @@ read_histos <- function(hist_file){
         if(any(is.na(add0$date.long))) stop('Date-vector not in correct format (%H:%M:%S %d-%b-%Y)! Please revise.')
         add0$date <- as.Date(add0$date.long)
         info <- add0[,which(names(add0) %in% c(identifiers,'date','date.long'))]
-        madd0 <- add0[,which(names(add0) %in% paste0("Bin",1:1000))]
+        nbins <- length(bb)
+        madd0 <- add0[,which(names(add0) %in% paste0("Bin",1:nbins))]
         for(ii in 1:ncol(madd0)) madd0[,ii] <- .fact2num(madd0[,ii])
-        hist_list[[Type]][[id]]$df <- data.frame(info,madd0,stringsAsFactors = F)
+        
+        add_final <- .get_histos_stats(madd0,bb)
+        hist_list[[Type]][[id]]$df <- data.frame(info,add_final,stringsAsFactors = F)
       }
     }
   }

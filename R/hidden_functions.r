@@ -65,3 +65,25 @@
   apply(newColor, 2, function(curcoldata){rgb(red=curcoldata[1], green=curcoldata[2],
                                               blue=curcoldata[3],alpha=alpha, maxColorValue=255)})
 }
+
+.get_histos_stats <- function(df, bin_breaks){
+  nbins <- length(bin_breaks)-1
+  vbins <- paste0("Bin",1:nbins)
+  mids <- bin_breaks[1:nbins]+diff(bin_breaks)/2
+  
+  df$SD <- df$avg <- NA
+  for(i in 1:nrow(df)){
+    s <- c()
+    for(j in 1:length(vbins)){
+      t <- df[[vbins[j]]][i]*86 # theoreticaly 8640 depth records per day if sampled every 10s
+      s <- c(s,rep(mids[j],t))
+    }
+    df$avg[i] <- mean(s,na.rm=T)
+    df$SD[i] <- sd(s,na.rm=T)
+  }
+  df.new <- df
+  return(df.new)
+}
+
+
+
