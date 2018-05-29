@@ -45,7 +45,7 @@ empty.plot_TS <- function(xlim, ylim, xticks_interval, ylab="", xlab="Time (UTC)
 
 plot_DepthTS <- plot_TS <- function(df, y="Depth", xlim, ylim, xticks_interval,
                                     ylab=y, xlab="Time (UTC)", main, main.line=1, plot_info=TRUE, 
-                                    ID, ID_label="Serial", 
+                                    ID, ID_label="Serial", #show.temp=F,
                                     plot_DayTimePeriods=TRUE, twilight.set="ast", 
                                     type="l", las=1, xaxs="i", yaxs="i", cex=1, plot_box=TRUE, bty="l", Return=FALSE, ...){
   if(missing(ID)) ID <- unique(df[[ID_label]])
@@ -57,7 +57,7 @@ plot_DepthTS <- plot_TS <- function(df, y="Depth", xlim, ylim, xticks_interval,
   if(!("date.long" %in% names(df))) stop('no "date.long" vector provided! please revise.')
   
   if(!missing(xlim)){
-    if(class(xlim)[1] == 'Date' | nchar(as.character(xlim[1])) == 10){
+    if(class(xlim)[1] == 'Date'){# | nchar(as.character(xlim[1])) == 10){
       xlim <- as.POSIXct(paste(xlim, '00:00:00'), tz="UTC")
       if(length(xlim) == 1) xlim <- c(xlim, xlim)
       xlim[2] <- xlim[2]+24*60*60
@@ -106,7 +106,7 @@ plot_DepthTS <- plot_TS <- function(df, y="Depth", xlim, ylim, xticks_interval,
     df$date <- as.Date(df$date.long)
   }
   
-  ### plot TS:
+  ### plot emptyTS plot:
   par(las=las, yaxs=yaxs, xaxs=xaxs,...)  
   plot(df$date.long, df[[y]], axes=FALSE, lwd=0, cex=0, xlab="", ylab="", xlim=xlim, ylim=ylim, ...)
   
@@ -162,8 +162,10 @@ plot_DepthTS <- plot_TS <- function(df, y="Depth", xlim, ylim, xticks_interval,
   
   xti <- which(xticks >= xlim[1] & xticks <=xlim[2])
   axis(1, at=xticks[xti], labels=xtick.labels[xti], xpd=TRUE, pos=par()$usr[3], cex.axis=.9*cex, lwd=0, lwd.ticks = 1)
-  if(.date.long2min(xlim[1]) != 0)  axis(1, at=xlim[1], labels=format(xlim[1], "%H:%M"), xpd=TRUE, pos=par()$usr[3], cex.axis=.9*cex, lwd=0, lwd.ticks = 1)
-  if(.date.long2min(xlim[2]) != 0)  axis(1, at=xlim[2], labels=format(xlim[2], "%H:%M"), xpd=TRUE, pos=par()$usr[3], cex.axis=.9*cex, lwd=0, lwd.ticks = 1)
+  
+  ### show_time_limits
+  # if(.date.long2min(xlim[1]) != 0)  axis(1, at=xlim[1], labels=format(xlim[1], "%H:%M"), xpd=TRUE, pos=par()$usr[3], cex.axis=.9*cex, lwd=0, lwd.ticks = 1)
+  # if(.date.long2min(xlim[2]) != 0)  axis(1, at=xlim[2], labels=format(xlim[2], "%H:%M"), xpd=TRUE, pos=par()$usr[3], cex.axis=.9*cex, lwd=0, lwd.ticks = 1)
   
   date.ticks <- xticks[which(xtick.labels == "12" & xticks >= xlim[1])]
   axis(1, at=date.ticks, labels=format(date.ticks, "%Y-%m-%d"), lwd=0, line=1, cex.axis=1*cex)
@@ -173,7 +175,57 @@ plot_DepthTS <- plot_TS <- function(df, y="Depth", xlim, ylim, xticks_interval,
   #     si <- which(.date.long2hour.dc(xticks[xti]) == 12)
   #     for(sii in si) text(xticks[xti][sii], y=max(ylim)-10, labels = "\U25d7", srt="90", cex=6, col=colors()[143], xpd=F)
   #   }
-  par(new=TRUE)
+  
+  
+  # if(show.temp){ ### interpolate Temperature data and add it to plot:
+    # Depth_res <- 1
+    # maxDepth <- max(ylim)
+    # depths <- seq(0,maxDepth,by=Depth_res) # sequence of depth values defining the vertical grid resolution
+    # df$date.longh <- .date2date.long(df$date,midday = F)+date.long2hour(df$date.long)*3600
+    # df$date.longh_id <- as.numeric(1+difftime(df$date.longh,min(df$date.longh),units = "hours"))
+    # date.longh_all <- seq(min(df$date.longh),max(df$date.longh),by=3600)
+    # ndates <- length(date.longh_all)
+    # Temperature_matrix <- matrix(ncol=ndates, nrow=length(depths), NA) # date-depth matrix
+    # smooth_hours <- 0
+    # smh <- smooth_hours
+    # 
+    # for(d in unique(df$date.longh_id)){
+    #   # d <- 1
+    #   df_sub <- df[which(df$date.longh_id %in% seq(d-smh,d+smh,by=1)),]
+    #   if(length(unique(df_sub$Temp)) > 1){
+    #     df_sub$Temp <- df_sub$Temp
+    #     # k2 <- plyr::ddply(df_sub[,which(names(df_sub) %in% c('date.longh_id','Depth','Temp'))],c("date.longh_id","Depth"),function(x)c(Temp=mean(x$Temp)))
+    #     # xx <- c(k2$date.longh_id,k2$date.longh_id+1)
+    #     
+    #     k2 <- plyr::ddply(df_sub[,which(names(df_sub) %in% c('date','Depth','Temp'))],c("date","Depth"),function(x)c(Temp=mean(x$Temp)))
+    #     xx <- c(k2$date,k2$date+1)
+    #     
+    #     yy <- c(k2$Depth,k2$Depth)
+    #     zz <- c(k2$Temp,k2$Temp)
+    #     temp <- akima::interp(x=xx,y=yy,z=zz,linear=T,duplicate='mean',yo=depths) # interpolate data per day
+    #     Temperature_matrix[,d] <- temp$z[1,]
+    #   }
+    # }
+    # xi <- date.longh_all
+    # yi <- depths
+    # zi <- Temperature_matrix
+    # 
+    # print(xi)
+  #   
+  #   
+  #   inst.pkg(raster)
+  #   f <- raster(zi[nrow(zi):1, ])
+  #   extent(f) <- extent(c(range(as.numeric(xi)), range(yi)))
+  #   
+  #   data(cmap)
+  #   par(new=TRUE)
+  #   image(f, xlim=as.numeric(xlim), ylim=ylim, col=cmap$light.jet, axes=F, ylab="", xlab="", add=T)#, zlim=zlim)
+  # }
+  
+  
+    
+  ### plot vertical track:
+  par(new=T)
   plot(df$date.long, df[[y]], axes=FALSE, xlab="", ylab=ylab, ylim=ylim, xlim=xlim, type=type,xpd=TRUE,...)
   axis(2, lwd = 0, cex.axis=.9*cex, lwd.ticks=1)
   if(plot_box) box(bty=bty)

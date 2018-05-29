@@ -107,8 +107,8 @@ Monterey, G., and S. Levitus (1997) Seasonal variability of mixed layer depth fo
 \examples{
 #### example 1) run on PDT file:
 ## step I) read sample PDT data file:
-setwd(system.file("example_files",package="RchivalTag"))
-PDT <- read_PDT("104659-PDTs.csv")
+path <- system.file("example_files",package="RchivalTag")
+PDT <- read_PDT("104659-PDTs.csv",folder=path)
 head(PDT)
 # 
 # ## step II) interpolate average temperature fields (MeanPDT) from PDT file:

@@ -55,8 +55,9 @@ read_histos <- function(hist_file){
         info <- add0[,which(names(add0) %in% c(identifiers,'date','date.long'))]
         nbins <- length(bb)
         madd0 <- add0[,which(names(add0) %in% paste0("Bin",1:nbins))]
-        for(ii in 1:ncol(madd0)) madd0[,ii] <- .fact2num(madd0[,ii])
+        for(icol in 1:ncol(madd0)) madd0[,icol] <- .fact2num(madd0[,icol])
         
+        madd0[which(is.na(madd0),arr.ind = T)] <- 0
         add_final <- .get_histos_stats(madd0,bb)
         hist_list[[Type]][[id]]$df <- data.frame(info,add_final,stringsAsFactors = F)
       }
@@ -143,7 +144,7 @@ rebin_histos <- merge_histos <- function(hist_list, tad_breaks=NULL, tat_breaks=
   hist_list_new <- list()
   Type <- 'TAD'
   for(Type in c('TAD','TAT')){
-    vlim <- .switch_if(Type == "TAD",c(0,5000),c(0,45))
+    vlim <- .switch_if(Type == "TAD",c(0,200),c(0,45))
     IDs <- names(hist_list[[Type]])
     if(length(IDs) != 0){
       cat('\n\nmerging',Type,'data:')

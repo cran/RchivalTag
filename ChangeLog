@@ -1,5 +1,15 @@
 RchivalTag versions
 
+upcoming:
+	- add argument "show_time_limits" in plot_TS/DepthTS
+
+RchivalTag_0.0.7 -- January 29, 2018 (Robert Bauer)
+        - interp-function from the akima package replaced in internal calls by the approx function of the stats-package
+	- added function resample_TS
+
+RchivalTag_0.0.6 -- June 9, 2017 (Robert Bauer)
+	- small bug fixed in read_histos
+
 RchivalTag_0.0.5 -- June 8, 2017 (Robert Bauer)
 	- adding average and standard deviation estimation for depth and temperature values insisde the read_histos and ts2histos functions
 

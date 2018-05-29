@@ -26,13 +26,17 @@ Bauer, R., F. Forget and JM. Fromentin (2015) Optimizing PAT data transmission: 
 
 
 \usage{
-read_PDT(pdt_file, sep=",")
+read_PDT(pdt_file, folder, sep=",")
 }
  
 
 \arguments{
 \item{pdt_file}{
 character string indicating the name of a standard PDT-file. The Date-vector of the file is expected to be or the format "\%H:\%M:\%S \%d-\%b-\%Y, tz='UTC'".
+}
+
+\item{folder}{
+path to pdt-file.
 }
 
 \item{sep}{
@@ -55,21 +59,21 @@ Robert K. Bauer
 
 \examples{
 ## step I) read sample PDT data file:
-setwd(system.file("example_files",package="RchivalTag"))
-PDT <- read_PDT("104659-PDTs.csv")
+path <- system.file("example_files",package="RchivalTag")
+PDT <- read_PDT("104659-PDTs.csv",folder=path)
 head(PDT)
 
 ## step II) interpolate average temperature fields (MeanPDT) from PDT file:
-m <- interpolate_PDTs(PDT)
-str(m)
-m$sm
+# m <- interpolate_PDTs(PDT)
+# str(m)
+# m$sm
 
 ## step III) calculate thermal stratifcation indicators per day (and tag):
-strat <- get_thermalstrat(m, all_info = TRUE)
-strat <- get_thermalstrat(m, all_info = FALSE)
+# strat <- get_thermalstrat(m, all_info = TRUE)
+# strat <- get_thermalstrat(m, all_info = FALSE)
 
 ## step IV) plot interpolated profiles:
-image_TempDepthProfiles(m$station.1)
+# image_TempDepthProfiles(m$station.1)
 
 
 }

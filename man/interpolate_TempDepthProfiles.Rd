@@ -92,8 +92,8 @@ Robert K. Bauer
 \examples{
 #### example 1) run on PDT file:
 ## step I) read sample PDT data file:
-setwd(system.file("example_files",package="RchivalTag"))
-PDT <- read_PDT("104659-PDTs.csv")
+path <- system.file("example_files",package="RchivalTag")
+PDT <- read_PDT("104659-PDTs.csv",folder=path)
 head(PDT)
 # 
 # ## step II) interpolate average temperature fields (MeanPDT) from PDT file:

@@ -1,7 +1,8 @@
-read_PDT <- function(pdt_file, sep=","){
+read_PDT <- function(pdt_file, folder, sep=","){
   
   options(warn=0)
   pdt_all <- c()
+  if(!missing(folder)) pdt_file <- paste0(paste0(folder,"/"),pdt_file)
   
   for(f in pdt_file){
     cat('running pdt_file',f,"\n")

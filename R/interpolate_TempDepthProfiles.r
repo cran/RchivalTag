@@ -44,14 +44,18 @@ interpolate_TempDepthProfiles <- function(ts, Temp_field="Temperature", ID_key="
         k$Depth <- k[[var]]
         k2 <- plyr::ddply(k[,which(names(k) %in% c('date','Depth','Temperature'))],c("date","Depth"),function(x)c(Temperature=mean(x$Temperature)))
         
-        xx <- c(k2$date,k2$date+1)
-        yy <- c(k2$Depth,k2$Depth)
-        zz <- c(k2$Temperature,k2$Temperature)
-        temp <- akima::interp(x=xx,y=yy,z=zz,linear=T,duplicate='mean',yo=depths) # interpolate data per day
-        Temperature_matrix[,sids] <- temp$z[1,]
+        ### old code depending on akima-package: (RchivalTag-package versions < 0.07) :
+        # xx <- c(k2$date,k2$date+1)
+        # yy <- c(k2$Depth,k2$Depth)
+        # zz <- c(k2$Temperature,k2$Temperature)
+        # temp <- akima::interp(x=xx,y=yy,z=zz,linear=T,duplicate='mean',yo=depths) # interpolate data per day
+        # Temperature_matrix[,sids] <- temp$z[1,]
+        
+        ### new code: (RchivalTag-package versions >= 0.07) :
+        temp <- approx(x = k2$Depth, xout = depths, y = k2$Temperature)
+        Temperature_matrix[,sids] <- temp$y
         
         #         dd <- paste0('Date_',format.Date(d,'%Y%m%d'))
-        
         #         df <- data.frame(Depth=depths,Temperature=temp$z[1,],Date=as.Date(d))
         #         out_list[[paste0(Data_Source,'.',id)]][[dd]] <- df[which(!is.na(df$Temperature)),]
       }

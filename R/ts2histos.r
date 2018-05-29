@@ -48,7 +48,7 @@ ts2histos <- function(ts_df, tad_breaks=NULL, tat_breaks=NULL, split_by=NULL, ag
       out <- rbind(out,  sm.df)
       #         }
       #       }
-      output[[Type]][["merged"]] <- list(df=out,bin_breaks=bin_breaks)  
+      output[[Type]][["merged"]] <- list(df=out,bin_breaks=bin_breaks,split_by=split_by)  
     }
   }
   return(output)

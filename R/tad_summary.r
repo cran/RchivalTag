@@ -1,5 +1,5 @@
 .tad_summary <- function(tad.df, vars=c(), bin_prefix='tad.'){
-  
+
   if(nrow(tad.df) == 0) stop("empty data frame provided! please revise!")
   treat.vars <- names(tad.df)[grep(bin_prefix,names(tad.df))]
   op <- plyr::ddply(tad.df,c(vars),function(x){

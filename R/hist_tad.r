@@ -55,6 +55,7 @@ hist_tad <- function(df,
       hist_list <- hist_list_new
     }
     IDs <- names(hist_list[[Type]])
+    if(length(IDs) > 1) cat('data from several IDs found (that will be plotted seperately):',paste(IDs,sep=", "),"\n")
     for(ID in IDs){
       df <- hist_list[[Type]][[ID]]$df
       bin_breaks <- hist_list[[Type]][[ID]]$bin_breaks
@@ -94,7 +95,7 @@ hist_tad <- function(df,
       #     if("dtime" %in% names(df) & length(grep('Night', names(df))) == 0) df$Night <- df$dtime
       
       if(length(split_by) > 0){
-        if(missing(split_levels) & split_by == "day.time") split_levels <- c("Night", "Day")
+        if(missing(split_levels) & split_by == "daytime") split_levels <- c("Night", "Day")
         if(missing(split_levels)) split_levels <- unique(df[[split_by]])
         if(length(split_by) > 1) stop("argument split_by providing the vector name to split TaD is > 1. please revise")
         if(length(grep(split_by, names(df))) == 0) stop("vector name to split TaD data does not exist. please revise!")
@@ -120,9 +121,9 @@ hist_tad <- function(df,
       }
       
       if(missing(main)) main <- ""
-      
       tdb <- paste0(bin_prefix, 1:length(bin_breaks))
       if(length(tad.df) < length(bin_prefix)) tad.df[[tdb[which(!(tdb %in% names(tad.df)))[1]]]] <- NA # add additional column if required
+      
       tad.sm <- .tad_summary(tad.df, vars=split_by, bin_prefix=bin_prefix)
       #     head(tad.sm)
       
@@ -199,11 +200,11 @@ hist_tad <- function(df,
           ylabels2 <- cbind(c(intToUtf8(8805), ylabels[2:length(ylabels)]), c(ylabels[1], ylabels[1:length(ylabels)-1]-1))
           ylabels2a <- apply(ylabels2, 1, function(x) paste(x[1], x[2], sep=""))
           ylabels2a[2:length(ylabels)] <- apply(ylabels2, 1, function(x) paste(x[1], x[2], sep="-"))[2:length(ylabels)]
-          
-          axis(2, pos=xlim[1]+yaxis.pos, at=(0.5:(ncol(raw)-0.5)), lwd="", labels=ylabels2a, las=1)
+        
+          axis(2, pos=xlim[1]+yaxis.pos, at=(0.5:(length(ylabels2a)-0.5)), lwd="", labels=ylabels2a, las=1)
           
         }else{
-          axis(2, pos=xlim[1]+yaxis.pos, at=(0:ncol(raw)), c("", ylabels), las=1)
+          axis(2, pos=xlim[1]+yaxis.pos, at=(0:length(ylabels)), c("", ylabels), las=1)
         }      
         
         if(xlab2.side == 1){

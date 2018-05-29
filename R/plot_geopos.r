@@ -1,5 +1,5 @@
 
-plot_geopos <- function(file, pos, xlim, ylim, prob_lim=.75, pal="jet", alpha=70, type="p", pch=19, add=FALSE, ...){
+plot_geopos <- function(file="", pos, xlim, ylim, prob_lim=.75, pal="jet", alpha=70, type="p", pch=19, add=FALSE, ...){
   
   cmap <- NULL
 #   oceanmap::plotmap('lion') ### check for Error in get(dbname) : object 'worldHiresMapEnv' not found
@@ -27,11 +27,11 @@ Return <- F
         header_found <- any(grepl("Most.Likely",header0))
       }
       pos <- read.csv(file, header=T,sep=',', skip=skip)
-      head(pos)
-      names(pos) <- gsub('Most.Likely.', '', names(pos))
-      names(pos) <- gsub('gitude', '', names(pos))
-      names(pos) <- gsub('itude', '', names(pos))  
     }
+    head(pos)
+    names(pos) <- gsub('Most.Likely.', '', names(pos))
+    names(pos) <- gsub('gitude', '', names(pos))
+    names(pos) <- gsub('itude', '', names(pos))  
 #     if(!missing(v_area)){
 #       r <- regions(v_area)
 #       xlim <- r$xlim
