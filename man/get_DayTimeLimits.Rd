@@ -15,7 +15,7 @@ get_DayTimeLimits(pos)
 }
  
 \arguments{
-\item{pos}{a \link{data.frame} with the columns \code{date.long} (a time vector in \code{POSIXct}-format), \code{Lon} and \code{Lat}.
+\item{pos}{a \link{data.frame} with the columns \code{datetime} (a time vector in \code{POSIXct}-format), \code{Lon} and \code{Lat}.
 }
 }
 
@@ -43,7 +43,7 @@ Robert K. Bauer
 
 #### example 1) estimate current times of dawn, sunrise, dusk and sunset in Mainz, Germany:
 pos <- data.frame(Lat=8.2667, Lon=50)
-pos$date.long <- strptime(Sys.Date(),"\%Y-\%m-\%d")
+pos$datetime <- strptime(Sys.Date(),"\%Y-\%m-\%d")
 get_DayTimeLimits(pos)
 
 #### example 1b) classify current ime of the day in Mainz, Germany:

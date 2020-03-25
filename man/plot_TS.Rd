@@ -14,38 +14,44 @@ plotting functions for time series data (e.g. depth or temperature time series d
 }
 
 \usage{
-plot_DepthTS(df, y="Depth", xlim, ylim, xticks_interval,
+plot_DepthTS(ts_df, y="Depth", xlim, ylim, xticks_interval,
              ylab=y, xlab="Time (UTC)", main, main.line=1, plot_info=TRUE, 
              ID, ID_label="Serial",
-             plot_DayTimePeriods=TRUE, twilight.set="ast", 
-             type="l", las=1, xaxs="i", yaxs="i", cex=1, 
+             plot_DayTimePeriods=FALSE, twilight.set="ast", 
+             cex=1, cex.main=1.2*cex, cex.lab=1*cex, 
+             cex.axis=.9*cex, cex.axis2=1*cex, 
+             type="l", las=1, xaxs="i", yaxs="i", 
              plot_box=TRUE, bty="l", Return=FALSE, ...)
+             
            
-plot_TS(df, y="Depth", xlim, ylim, xticks_interval,
+plot_TS(ts_df, y="Depth", xlim, ylim, xticks_interval,
         ylab=y, xlab="Time (UTC)", main, main.line=1, plot_info=TRUE, 
         ID, ID_label="Serial",
-        plot_DayTimePeriods=TRUE, twilight.set="ast", 
-        type="l", las=1, xaxs="i", yaxs="i", cex=1, 
+        plot_DayTimePeriods=FALSE, twilight.set="ast", 
+        cex=1, cex.main=1.2*cex, cex.lab=1*cex, 
+        cex.axis=.9*cex, cex.axis2=1*cex, 
+        type="l", las=1, xaxs="i", yaxs="i", 
         plot_box=TRUE, bty="l", Return=FALSE, ...)
        
-empty.plot_TS(xlim, ylim, xticks_interval, ylab="", xlab="Time (UTC)", 
-              las=1, xaxs="i", yaxs="i", cex=1, 
+empty.plot_TS(xlim, ylim, xticks_interval, ylab="", xlab="Time (UTC)", main="",
+              cex=1, cex.main=1.2*cex, cex.lab=1*cex, 
+              cex.axis=.9*cex, cex.axis2=1*cex,               
+              las=1, xaxs="i", yaxs="i", do_yaxis = TRUE,
               plot_box=TRUE, bty="l", ...)
-
 }
  
 
 \arguments{
-\item{df}{\link{data.frame} holding the time series data to be plotted, including the x-vector 'date.long' (in \code{POSIXct}-format  and UTC), and the numeric y-vector whose label is defined by \code{y}.
+\item{ts_df}{\link{data.frame} holding the time series data to be plotted, including the x-vector 'datetime' (in \code{POSIXct}-format  and UTC), and the numeric y-vector whose label is defined by \code{y}.
 }
 
 \item{y}{character label of time series vector to be plotted (by default 'Depth').
 }
 
-\item{xlim}{the x limits (x1, x2) of the plot (by default range(df$date.long), but needs to be specified in \code{empty.plot_TS}).
+\item{xlim}{the x limits (x1, x2) of the plot (by default range(ts_df$datetime), but needs to be specified in \code{empty.plot_TS}).
 }
 
-\item{ylim}{the y limits of the plot (by default range(df[[y]]), but needs to be specified in \code{empty.plot_TS}).
+\item{ylim}{the y limits of the plot (by default range(ts_df[[y]]), but needs to be specified in \code{empty.plot_TS}).
 }
 
 \item{xticks_interval}{time step of the x-axis ticklabels in (full) hours. By default 3 hours for xlim differences <= 1 day, and 6 hours for differences > 1 day. 
@@ -60,7 +66,7 @@ main title (by default "Tag ID") for the plot and its line (see \link{mtext} for
 }
 
 \item{plot_info}{
-wheather the plot title and axes labels should be shown (by default \code{TRUE}).
+whether the plot title and axes labels should be shown (by default \code{TRUE}).
 }
 
 
@@ -87,7 +93,7 @@ numeric in {0,1,2,3}; the style of axis labels.\cr\cr
 3: always perpendicular\cr
 4: always vertical
 
-}
+}"
 
 \item{xaxs, yaxs}{
 The style of axis interval calculation to be used for the x-and y-axes. Possible values are "r" and "i" (default). The styles are generally controlled by the range of data or xlim, if given.\cr\cr
@@ -95,13 +101,15 @@ Style "r" (regular) first extends the data range by 4 percent at each end and th
 Style "i" (internal) just finds an axis with pretty labels that fits within the original data range.
 }
 
-\item{cex}{The standard font size (by default 1). Attention, the (internal) standard font size of axis labels \code{cex.axis} is 0.9*\code{cex} and the plot title cex.main= 1.2*\code{cex}.\cr
-
+\item{cex,cex.main, cex.lab, cex.axis, cex.axis2}{The standard font size of title, axis labels and tick labels.\cr
 }
 
 \item{plot_DayTimePeriods, twilight.set}{
 whether day-time periods ('Night', 'Dawn', 'Day', 'Dusk') should be plotted as shaded areas. In case that \code{plot_DayTimePeriods} is set \code{TRUE}), the limits of each time period are required (columns \code{sunrise}, \code{sunset}, \code{dawn.ast},/\code{dawn.naut} and \code{dawn.ast}/\code{dawn.naut} in \code{POSIXct}-format. In case of the twilight events, the additional argument \code{twilight.set} defines the suffix of the twlight-set to be selected ( \code{"ast"} for astronomical dawn and dusks vs \code{"naut"} for nautical twilight events).
 If any of the day-time columns, described above, is missing, it/they will be calculated based on geolocation estimates (required columns \code{Lon} and \code{Lat}) through an internal call of function \code{get_DayTimeLimits}.\cr
+}
+
+\item{do_yaxis}{Optional argument in empty.plot_TS to define whether a y-axis shall be plotted (by default \code{TRUE}).
 }
 
 \item{plot_box, bty}{
@@ -129,11 +137,16 @@ Robert K. Bauer
 \examples{
 ### load sample depth and temperature time series data from miniPAT:
 ts_file <- system.file("example_files/104659-Series.csv",package="RchivalTag")
-ts_df <- read.table(ts_file, header = TRUE, sep = ",")
+ts_df <- read_TS(ts_file)
+ts_df$Serial <- ts_df$DeployID
 head(ts_df)
-ts_df$date.long <- as.POSIXct(strptime(paste(ts_df$Day, ts_df$Time), 
-                              "\%d-\%b-\%Y \%H:\%M:\%S",tz = "UTC"))
-ts_df$date <- as.Date(ts_df$date.long)
+
+## load same data in LOTEK format
+ts_file <- system.file("example_files/104659_PSAT_Dive_Log.csv",package="RchivalTag")
+ts_df <- read_TS(ts_file,date_format="\%m/\%d/\%Y \%H:\%M:\%S")
+head(ts_df) ## attention no identifier (Ptt, Serial, DeployID) included!
+ts_df$DeployID <- ts_df$Ptt <- "104659"
+ts_df$Serial <- "Tag1"
 
 ### select subsets (dates to plot)
 # plot_DepthTS(ts_df, plot_DayTimePeriods = FALSE, xlim = unique(ts_df$date)[2:3])
@@ -165,10 +178,10 @@ ts_df$date <- as.Date(ts_df$date.long)
 
 ### example for empty.plotTS and adding time series data as line:
 # empty.plot_TS(xlim="2016-08-10",ylim=c(100,0))
-# lines(ts_df$date.long, ts_df$Depth)
+# lines(ts_df$datetime, ts_df$Depth)
 
 ### alternative:
 # plot_DepthTS(ts_df, xlim=c("2016-08-10","2016-08-12"), plot_DayTimePeriods = TRUE, type='n') 
-# lines(ts_df$date.long, ts_df$Depth)
+# lines(ts_df$datetime, ts_df$Depth)
 
 }

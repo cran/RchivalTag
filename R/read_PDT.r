@@ -1,4 +1,4 @@
-read_PDT <- function(pdt_file, folder, sep=","){
+read_PDT <- function(pdt_file, folder, sep=",",date_format,tz="UTC"){
   
   options(warn=0)
   pdt_all <- c()
@@ -55,14 +55,15 @@ read_PDT <- function(pdt_file, folder, sep=","){
     }
   }
   lct <- Sys.getlocale("LC_TIME"); Sys.setlocale("LC_TIME", "C")
-  pdt_all$date.long <- strptime(pdt_all$Date,"%H:%M:%S %d-%b-%Y")
-  pdt_all$date <- as.Date(pdt_all$date.long)
+  if(missing(date_format)) date_format <- "%H:%M:%S %d-%b-%Y"
+  pdt_all$datetime <- strptime(pdt_all$Date,date_format,tz=tz)
+  pdt_all$date <- as.Date(pdt_all$datetime)
   
   # check if date conversion worked out
   ii <- which(is.na(pdt_all$date))
   if(length(ii) > 0){
     warning("Column 'Date' of pdt_file(s):\n",paste(unique(pdt_all$pdt_file[ii]),collapse=",\n"),
-         "\nnot in correct format (%H:%M:%S %d-%b-%Y).\nStandard 'date' and 'date.long'-vectors could not be constructed!")
+         "\nnot in correct format (',date_format,').\nPlease choose a format corresponding to '",pdt_all$date[1],"'.")
   }else{
     pdt_all$Date <- c()
   }

@@ -18,7 +18,7 @@ resample_TS(df, tstep)
  
 
 \arguments{
-\item{df}{\link{data.frame} holding the time series data to be resampled, including a 'date.long'-vector (in \code{POSIXct}-format  and UTC).
+\item{df}{\link{data.frame} holding the time series data to be resampled, including a 'datetime'-vector (in \code{POSIXct}-format  and UTC).
 }
 
 \item{tstep}{numeric vector indicating the resampling resolution in seconds).
@@ -39,7 +39,7 @@ Robert K. Bauer
 ts_file <- system.file("example_files/104659-Series.csv",package="RchivalTag")
 ts_df <- read.table(ts_file, header = TRUE, sep = ",")
 head(ts_df)
-ts_df$date.long <- as.POSIXct(strptime(paste(ts_df$Day, ts_df$Time), 
+ts_df$datetime <- as.POSIXct(strptime(paste(ts_df$Day, ts_df$Time), 
                               "\%d-\%b-\%Y \%H:\%M:\%S",tz = "UTC"))
 
 tsims <- resample_TS(ts_df,600)

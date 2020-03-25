@@ -28,7 +28,7 @@ interpolate_TempDepthProfiles <- function(ts, Temp_field="Temperature", ID_key="
       ndates <- length(dates)
     }
     
-    maxDepth <- ceiling(max(ts_sub[[var]])/10)*10
+    maxDepth <- ceiling(max(ts_sub[[var]],na.rm=T)/10)*10
     depths <- seq(0,maxDepth,Depth_res) # sequence of depth values defining the vertical grid resolution
     Temperature_matrix <- matrix(ncol=ndates,nrow=length(depths),NA) # date-depth matrix
     
@@ -52,9 +52,14 @@ interpolate_TempDepthProfiles <- function(ts, Temp_field="Temperature", ID_key="
         # Temperature_matrix[,sids] <- temp$z[1,]
         
         ### new code: (RchivalTag-package versions >= 0.07) :
-        temp <- approx(x = k2$Depth, xout = depths, y = k2$Temperature)
-        Temperature_matrix[,sids] <- temp$y
+        temp <- try(approx(x = k2$Depth, xout = depths, y = k2$Temperature),silent = T)
+        if(class(temp) != "try-error") {
+          # save(depths, k2, file="~/Desktop/file.rd")
+          # load("~/Desktop/file.rd",verbose = T)
+          # stop()
         
+        Temperature_matrix[,sids] <- temp$y
+        }
         #         dd <- paste0('Date_',format.Date(d,'%Y%m%d'))
         #         df <- data.frame(Depth=depths,Temperature=temp$z[1,],Date=as.Date(d))
         #         out_list[[paste0(Data_Source,'.',id)]][[dd]] <- df[which(!is.na(df$Temperature)),]

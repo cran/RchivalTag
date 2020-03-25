@@ -49,7 +49,7 @@ Robert K. Bauer
 
 #### example 1) estimate current times of dawn, sunrise, dusk and sunset in Mainz, Germany:
 pos <- data.frame(Lat=8.2667, Lon=50)
-pos$date.long <- strptime(Sys.Date(),"\%Y-\%m-\%d")
+pos$datetime <- strptime(Sys.Date(),"\%Y-\%m-\%d")
 get_DayTimeLimits(pos)
 
 #### example 1b) classify current ime of the day in Mainz, Germany:
@@ -62,7 +62,7 @@ ts_df <- read.table(ts_file, header = TRUE, sep = ",")
 tad_breaks <- c(0, 2, 5, 10, 20, 50, 100, 200, 300, 400, 600, 2000)
 
 ts_df$Lat <- 4; ts_df$Lon=42.5 ## required geolocations to estimate daytime
-ts_df$date.long <- strptime(paste(ts_df$Day,ts_df$Time),"\%d-\%B-\%Y \%H:\%M:\%S")
+ts_df$datetime <- strptime(paste(ts_df$Day,ts_df$Time),"\%d-\%B-\%Y \%H:\%M:\%S")
 head(ts_df)
 ts_df2 <- classify_DayTime(get_DayTimeLimits(ts_df)) # estimate daytime
 head(ts_df2)

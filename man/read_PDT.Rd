@@ -26,7 +26,7 @@ Bauer, R., F. Forget and JM. Fromentin (2015) Optimizing PAT data transmission: 
 
 
 \usage{
-read_PDT(pdt_file, folder, sep=",")
+read_PDT(pdt_file, folder, sep=",",date_format,tz="UTC")
 }
  
 
@@ -43,10 +43,13 @@ path to pdt-file.
 the field separator character. Values on each line of the file are separated by this character (default is ',').
 }
 
+\item{date_format,tz}{
+character strings indicating the date format and the corresponding time zone of the histogram file, defined by the vectors Date and Time (by default: date_format="\%H:\%M:\%S \%d-\%b-\%Y, tz='UTC'")}
+
 }
 
 \value{A \link{data.frame} with the columns:\cr
-"pdt_file", "DeployID", "Ptt", "NumBins", "Depth", "MinTemp", "MaxTemp", "date.long", "date", "MeanPDT"
+"pdt_file", "DeployID", "Ptt", "NumBins", "Depth", "MinTemp", "MaxTemp", "datetime", "date", "MeanPDT"
 \cr \bold{Attention:  Column "MeanPDT" is not measured} but calculated as the average of "MinTemp" and "MaxTemp" values.
 }
 

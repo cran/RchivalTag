@@ -111,10 +111,8 @@ head(PDT)
 # 
 # #### example 2) run on time series data:
 # ## step I) read sample time series data file:
-# DepthTempTS <- read.table(system.file("example_files/104659-Series.csv",
-#                                       package="RchivalTag"),header = TRUE,sep=',')
-# DepthTempTS$date <- as.Date(DepthTempTS$Day,"\%d-\%b-\%Y")
-# head(DepthTempTS)
+# ts_file <- system.file("example_files/104659-Series.csv",package="RchivalTag")
+# DepthTempTS <- read_TS(ts_file)
 # 
 # 
 # ## step Ib) bin temperature data on 10m depth bins 

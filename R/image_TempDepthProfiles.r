@@ -4,7 +4,7 @@ image_TempDepthProfiles <- function(x, main=NULL, xlab='Date', ylab="Depth (m)",
                                     xlim, ylim, zlim, pal="jet", only.months, month.line, mars, ...){
   cmap <- NULL
   if(is.character(pal) & length(pal) == 1){
-    data(cmap, package='oceanmap', envir = environment())
+    data("cmap", package='oceanmap', envir = environment())
     pal <- cmap[[pal]]
   }
   # figure()
@@ -24,13 +24,13 @@ image_TempDepthProfiles <- function(x, main=NULL, xlab='Date', ylab="Depth (m)",
   image(x$Date, x$Depth, z, main=main, xlab=xlab, ylab=ylab, xlim=xlim, ylim=ylim, zlim=zlim, col=pal, axes=F)
   xlim_num <- as.numeric(xlim)
   if(missing(only.months)) only.months <- (xlim_num[2]-xlim_num[1]) > 93
-  .dates.axis(xlim, only.months = only.months, month.line=month.line) 
+  .dates.axis(xlim, only.months = only.months, month.line=month.line,do_mid.ticks=T) 
   oceanmap::set.colorbarp(cbxp = c(84,86), cby=c(12,90), pal = pal, zlim=zlim, cb.xlab=cb.xlab, cex.cb.xlab=cex.cb.xlab, cex.cb.ticks=cex.cb.ticks,...)
 }
 
 
 
-.dates.axis <- function(dates, only.months=T, do.yaxis=TRUE, force.months=F, month.line=NA){
+.dates.axis <- function(dates, only.months=T, do.yaxis=TRUE, force.months=F, month.line=NA,do_mid.ticks=TRUE){
   par(new=T, xaxs="i", yaxs="i")
   
   if(is.character(dates)| is.factor(dates)) dates <- .fact2Date(dates)
@@ -58,7 +58,7 @@ image_TempDepthProfiles <- function(x, main=NULL, xlab='Date', ylab="Depth (m)",
     num.dates <- as.numeric(dates)
     plot(dates, rep(1, length(dates)), axes=F, cex=0, xlim=par()$usr[1:2], ylim=par()$usr[3:4], xlab="", ylab="")
     xticks <- pretty(dates)
-    axis(1, at=as.numeric(xticks)+.5, labels=as.Date(xticks), lwd = 0, lwd.ticks = 1)
+    axis(1, at=as.numeric(xticks)+.5*do_mid.ticks, labels=as.Date(xticks), lwd = 0, lwd.ticks = 1)
     axis(2, las=1, lwd = 0, lwd.ticks = 1)
   }
   box()

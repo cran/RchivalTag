@@ -17,7 +17,8 @@ To visualize Time-at-Temperature (TaT) and Time-at-Depth (TaD) data, please see 
 }
 
 \usage{
-ts2histos(ts_df, tad_breaks=NULL, tat_breaks=NULL, split_by=NULL, aggregate_by="Ptt")
+ts2histos(ts_df, tad_breaks=NULL, tat_breaks=NULL, split_by=NULL, 
+          aggregate_by="Ptt",min_perc, omit_negatives=TRUE)
 }
  
 
@@ -31,24 +32,32 @@ a numeric vector, defining the depth and/or temperature breakpoints of the histo
 }
 
 \item{split_by}{
-Name of the logical vector by which TaD/TaT data shall be splitted (e.g. daytime; see \link{classify_DayTime}).
+Name of the column with logical entries by which TaD/TaT data shall be splitted (e.g. daytime; see \link{classify_DayTime}.).
 }
 
 \item{aggregate_by}{
 character vector defining the columns by which the tagging data should be aggregated. Should contain columns that identify tags (e.g. Serial, Ptt, DeployID) the date and/or day time period (to seperate records from night, day, dawn and dusk see \link{classify_DayTime}). Default values are: date, Day and Ptt.
 }
 
+\item{min_perc}{
+optional number, defining the minimum data coverage (in percent) of histogram entries obtained from depth time series data.
 }
 
-\value{A list-of-lists containing the loaded histogram data. Lists of TAD and TAT data are distinguished at the first nesting level. Further sublists include the \code{bin_breaks} and \link{data.frame}s of the generated histogram data. \strong{The data.frames of the histogram data thereby also contain average (avg) and standard deviation (SD) of depth and temperature values that are likewise directly estimated from time series data}, unlike \link{read_histos}-generated values that are estimated from the histogram data. The accuracy of latter estimates thus depends on the number and selection of bin breaks (see statistics-example in \link{read_histos}).
+\item{omit_negatives}{
+treat negative depth and temperature records as 0 (default is \code{TRUE}). 
+}
 
-$ TAD:List\cr
+}
+
+\value{A list-of-lists containing the loaded histogram data. Lists of TaD and TaT data are distinguished at the first nesting level. Further sublists include the \code{bin_breaks} and \link{data.frame}s of the generated histogram data. \strong{The data.frames of the histogram data thereby also contain average (avg) and standard deviation (SD) of depth and temperature values that are likewise directly estimated from time series data}, unlike \link{read_histos}-generated values that are estimated from the histogram data. The accuracy of latter estimates thus depends on the number and selection of bin breaks (see statistics-example in \link{read_histos}).
+
+$ TaD:List\cr
   ..$ merged  : List of 2\cr
   .. ..$ bin_breaks: num\cr 
   .. ..$ df        : data.frame \cr
   .. .. ..$ DeployID \cr
   .. .. ..$ Ptt \cr
-  .. .. ..$ date.long \cr
+  .. .. ..$ datetime \cr
   .. .. ..$ date \cr
   .. .. ..$ Bin1 \cr
   ..
@@ -57,7 +66,7 @@ $ TAD:List\cr
   .. .. ..$ SD (average depth estimated!! from histogram data) \cr
 
 
-$ TAT:List\cr 
+$ TaT:List\cr 
   ..$ merged  : List of 2\cr
   .. ..$ bin_breaks: num\cr 
   .. ..$ df        : data.frame (with columns as above)\cr 
@@ -76,29 +85,31 @@ Robert K. Bauer
 \examples{
 ### load sample depth and temperature time series data from miniPAT:
 ts_file <- system.file("example_files/104659-Series.csv",package="RchivalTag")
-ts_df <- read.table(ts_file, header = TRUE, sep = ",")
+ts_df <- read_TS(ts_file)
 head(ts_df)
 
 tad_breaks <- c(0, 2, 5, 10, 20, 50, 100, 200, 300, 400, 600, 2000)
 tat_breaks <- c(10,12,15,17,18,19,20,21,22,23,24,27)
 
 
-## example 1a) convert only DepthTS data to daily TAD frequencies:
+## example 1a) convert only DepthTS data to daily TaD frequencies:
 ts2histos(ts_df, tad_breaks = tad_breaks)
-hist_tad(ts_df, bin_breaks = tad_breaks)
+# hist_tad(ts_df, bin_breaks = tad_breaks)
 hist_tad(ts_df, bin_breaks = tad_breaks, do_mid.ticks = FALSE)
 
-## convert 1b) only TemperatureTS data to daily TAT frequencies:
+## convert 1b) only TemperatureTS data to daily TaT frequencies:
 tat <- ts2histos(ts_df, tat_breaks = tat_breaks)
 hist_tat(ts_df, bin_breaks = tat_breaks, do_mid.ticks = FALSE)
 hist_tat(tat$TAT$merged, do_mid.ticks = FALSE)
 
-## convert 1c) DepthTS & TemperatureTS data to daily TAD & TAT frequencies:
-ts2histos(ts_df, tad_breaks = tad_breaks, tat_breaks = tat_breaks)
+## convert 1c) DepthTS & TemperatureTS data to daily TaD & TaT frequencies:
+histos <- ts2histos(ts_df, tad_breaks = tad_breaks, tat_breaks = tat_breaks)
+histos$TAD$merged$df$nperc ## check completeness of TAD data sets
+histos$TAT$merged$df$nperc ## check completeness of TAT data sets
+# histos <- ts2histos(ts_df, tad_breaks = tad_breaks, tat_breaks = tat_breaks,min_perc = 90)
 
-## convert 1d) back-to-back histogram showing day vs night TAD frequencies:
+## convert 1d) back-to-back histogram showing day vs night TaD frequencies:
 ts_df$Lat <- 4; ts_df$Lon=42.5 ## required geolocations to estimate daytime
-ts_df$date.long <- strptime(paste(ts_df$Day,ts_df$Time),"\%d-\%B-\%Y \%H:\%M:\%S")
 head(ts_df)
 ts_df2 <- classify_DayTime(get_DayTimeLimits(ts_df)) # estimate daytime
 head(ts_df2)
@@ -107,7 +118,7 @@ ts2histos(ts_df2, tad_breaks = tad_breaks,split_by = "daytime")
 hist_tad(ts_df2, bin_breaks = tad_breaks,split_by = "daytime", do_mid.ticks = FALSE)
 
 
-## example 2) rebin daily TAD frequencies:
+## example 2) rebin daily TaD frequencies:
 tad <- ts2histos(ts_df, tad_breaks = tad_breaks)
 tad2 <- rebin_histos(hist_list = tad, tad_breaks = tad_breaks[c(1:3,6:12)])
 par(mfrow=c(2,2))

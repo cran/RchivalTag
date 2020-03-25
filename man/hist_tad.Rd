@@ -22,14 +22,14 @@ The purpose of this function is the visualization of Time-at-Depth (TaD) histogr
 hist_tad(df, 
             bin_breaks=NULL, bin_prefix="Bin", 
             select_id, select_from='Ptt', aggregate_by='Ptt',
-            date, 
+            date, min_perc,
             main, xlab='Time at Depth (\%)', ylab="Depth (m)", labeling=TRUE,
             xlim=c(0, 100), adaptive.xlim=FALSE, 
             split_by=NULL, split_levels, xlab2=split_levels, 
             ylab.side=2, ylab.line, ylab.font=1,
             xlab.side=3, xlab.line=2.5, xlab.font=1,
             xlab2.side=1, xlab2.line=1, xlab2.font=2,
-            main.side=2, main.line=3.8, main.font=1,
+            main.side=3, main.line=3.8, main.font=1,
             col=c("darkgrey", "white"), 
             do_mid.ticks=TRUE, yaxis.pos=0, 
             mars,
@@ -57,6 +57,10 @@ character vector defining the columns by which the tagging data should be aggreg
 
 \item{date}{
 An optional vector to select depth data of a specified date/-range.
+}
+
+\item{min_perc}{
+optional number, defining the minimum data coverage (in percent) of histogram entries obtained from depth time series data.
 }
 
 \item{main, xlab, ylab, labeling}{
@@ -142,7 +146,7 @@ Robert K. Bauer
 
 \examples{
 ts_file <- system.file("example_files/104659-Series.csv",package="RchivalTag")
-ts_df <- read.table(ts_file, header = TRUE, sep = ",")
+ts_df <- read_TS(ts_file)
 head(ts_df)
 
 tad_breaks <- c(0, 2, 5, 10, 20, 50, 100, 200, 300, 400, 600, 2000)
@@ -163,7 +167,6 @@ ts2histos(ts_df, tad_breaks = tad_breaks, tat_breaks = tat_breaks)
 
 ## convert 1d) back-to-back histogram showing day vs night TAD frequencies:
 ts_df$Lat <- 4; ts_df$Lon=42.5 ## required geolocations to estimate daytime
-ts_df$date.long <- strptime(paste(ts_df$Day,ts_df$Time),"\%d-\%B-\%Y \%H:\%M:\%S")
 head(ts_df)
 ts_df2 <- classify_DayTime(get_DayTimeLimits(ts_df)) # estimate daytime
 head(ts_df2)

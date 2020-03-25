@@ -9,15 +9,46 @@ reads a TAD/TAT-histogram file from archival tags
 reads or posttreats a manually loaded standard histogram data file, containing Time-at-Depth (TAD) and Time-at-Temperature (TAT) frequency data, from archival tags by \href{http://wildlifecomputers.com/}{Wildlife Computers}.
 }
 \usage{
-read_histos(hist_file)
+
+read_histos(hist_file, date_format, lang_format="en", tz="UTC", dep.end, Serial, 
+            force_24h=TRUE, min_perc, omit_negatives=TRUE, right_truncate=TRUE)
 }
  
 
 \arguments{
 \item{hist_file}{
-character string indicating the name of a standard \href{http://wildlifecomputers.com/}{Wildlife Computers} file to read or the \link{data.frame} of a manually loaded histogram data file. The Date-vector of the file is expected to be or the format "\%H:\%M:\%S \%d-\%b-\%Y, tz='UTC'". The combination of the columns \code{DeployID}, \code{Ptt} and \code{Serial} is assumed to provide an unique key to distinguish data from indiviudal tags.
+character string indicating the name of a standard \href{http://wildlifecomputers.com/}{Wildlife Computers} file to read or the \link{data.frame} of a manually loaded histogram data file. The combination of the columns \code{DeployID}, \code{Ptt} and \code{Serial} is assumed to provide an unique key to distinguish data from indiviudal tags.
 }
 
+\item{force_24h}{
+whether histogram data with a time step of less than 24h should be merged to 24h (default is \code{TRUE}).
+Note that the current version of \link{hist_tad} and \link{hist_tat} was written for 24h data!
+}
+
+\item{date_format, lang_format, tz}{
+character strings indicating the date format, language format and the corresponding time zone, defined by the vectors Date and Time (by default: date_format="\%H:\%M:\%S \%d-\%b-\%Y", lang_format="en", tz='UTC')
+If formatting fails, please check as well the input language format, defined by \code{lang_format} (and use abbrviations such as "en" for English,"es" for Spanish, "fr" for French, etc.) as well.
+}
+
+\item{dep.end}{
+\link{Date} specifying the deployment end of the tag.
+}
+
+\item{Serial}{
+character-string indicating the Serial number of the tag to be selected. (in case of multi-tag histogram files.)
+}
+
+\item{min_perc}{
+optional number, defining the minimum data coverage (in percent) of histogram entries obtained from depth time series data.
+}
+
+\item{omit_negatives}{
+merge negative depth and temperature bins with next positive bin (>= 0; default is \code{TRUE}). 
+}
+
+\item{right_truncate}{
+truncate the values of the last tat- and tad-bin to 45 degrees and 2000 m, respectively (default is \code{TRUE}). 
+}
 
 }
 
@@ -34,7 +65,7 @@ $ TAD:List\cr
   .. ..$ df        : data.frame \cr
   .. .. ..$ DeployID \cr
   .. .. ..$ Ptt \cr
-  .. .. ..$ date.long \cr
+  .. .. ..$ datetime \cr
   .. .. ..$ date \cr
   .. .. ..$ Bin1 \cr
   ..
@@ -60,6 +91,12 @@ Robert K. Bauer
 }
 
 \examples{
+## read and merge 12h histogram data:
+# 12h_hist_file <- system.file("example_files/67851-12h-Histos.csv",package="RchivalTag")
+# hist_dat_0 <- read_histos(12h_hist_file,min_perc=100) # omit incomplete days
+# hist_tad(hist_dat_0)
+#hist_tat(hist_dat_0)
+
 ## example 1) read, merge and plot TAD frequency data from several files:
 ## part I - read histogram data from two files:
 hist_dat_1 <- read_histos(system.file("example_files/104659-Histos.csv",package="RchivalTag"))
@@ -92,8 +129,10 @@ hist_dat_1 <- read_histos(system.file("example_files/104659-Histos.csv",package=
 avg1 <- hist_dat_1$TAD$DeployID.15P1019_Ptt.104659$df$avg # infered from the histogram data
 
 # generate histogram data and average/sd-estimates from depth time series data of the same tag.
+# attention! unlike for histogram files, the average/sd-estimates are calculated
+# directly from depth time series data and not from the binned histogram data
 ts_file <- system.file("example_files/104659-Series.csv",package="RchivalTag")
-ts_df <- read.table(ts_file, header = TRUE, sep = ",")
+ts_df <- read_TS(ts_file)
 
 tad_breaks <- c(0, 2, 5, 10, 20, 50, 100, 200, 300, 400, 600, 2000)
 hist_dat_2 <- ts2histos(ts_df, tad_breaks = tad_breaks)
@@ -102,6 +141,24 @@ avg2 <- hist_dat_2$TAD$merged$df$avg # directly estimated from the depth time se
 # check accuracy of average depth values:
 plot(avg1, avg2) 
 avg1-avg2
+abline(0,b = 1,lty="dotted")
+
+## crosscheck!
+# library(plyr)
+# ts_stats <- ddply(ts_df,c("date"),function(x) c(avg=mean(x$Depth,na.rm=T),SD=sd(x$Depth,na.rm=T)))
+# avg2==ts_stats$avg
+
+# path <- system.file("example_files",package="RchivalTag")
+# PDT <- read_PDT("104659-PDTs.csv",folder=path)
+# head(PDT)
+# image_TempDepthProfiles(interpolate_PDTs(PDT)[[1]])
+
+## add information
+# lines(ts_stats$date+.5,ts_stats$avg)
+# add <- hist_dat_2$TAD$merged$df
+# lines(add$date+.5,add$avg)
+# axis(2,at=50,las=1)
+# abline(h=20,lty="dashed",col="violet",lwd=3)
 
 
 }

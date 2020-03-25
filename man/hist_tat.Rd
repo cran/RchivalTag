@@ -138,7 +138,7 @@ Robert K. Bauer
 
 \examples{
 ts_file <- system.file("example_files/104659-Series.csv",package="RchivalTag")
-ts_df <- read.table(ts_file, header = TRUE, sep = ",")
+ts_df <- read_TS(ts_file)
 head(ts_df)
 
 tad_breaks <- c(0, 2, 5, 10, 20, 50, 100, 200, 300, 400, 600, 2000)
@@ -146,7 +146,7 @@ tat_breaks <- c(10,12,15,17,18,19,20,21,22,23,24,27)
 
 ## example 1a) convert only DepthTS data to daily TAD frequencies:
 ts2histos(ts_df, tad_breaks = tad_breaks)
-hist_tad(ts_df, bin_breaks = tad_breaks)
+# hist_tad(ts_df, bin_breaks = tad_breaks)
 hist_tad(ts_df, bin_breaks = tad_breaks, do_mid.ticks = FALSE)
 
 ## convert 1b) only TemperatureTS data to daily TAT frequencies:
@@ -159,7 +159,6 @@ ts2histos(ts_df, tad_breaks = tad_breaks, tat_breaks = tat_breaks)
 
 ## convert 1d) back-to-back histogram showing day vs night TAD frequencies:
 ts_df$Lat <- 4; ts_df$Lon=42.5 ## required geolocations to estimate daytime
-ts_df$date.long <- strptime(paste(ts_df$Day,ts_df$Time),"\%d-\%B-\%Y \%H:\%M:\%S")
 head(ts_df)
 ts_df2 <- classify_DayTime(get_DayTimeLimits(ts_df)) # estimate daytime
 head(ts_df2)

@@ -10,7 +10,7 @@ RchivalTag - Analyzing Archival Tagging Data
 \itemize{
   \item{"(Depth) time series data"} (See \link{empty.plot_TS}, \link{plot_TS} & \link{plot_DepthTS})
   \item{"Time-at-Depth (TaD) and Time-at-Temperature (TaT) fequencies"} (See \link{ts2histos}, \link{merge_histos}, \link{hist_tad} & \link{hist_tat})
-  \item{"Depth Temperature profiles (time series data)"} (See \link{interpolate_TempDepthProfiles}, \link{get_thermalstrat} & \link{image_TempDepthProfiles})
+  \item{"Depth Temperature profiles (time series data)"} (See \link{plot_DepthTempTS}, \link{plot_DepthTempTS_resampled}, \link{plot_DepthTempTS_resampled_PDT}, \link{interpolate_TempDepthProfiles}, \link{get_thermalstrat} & \link{image_TempDepthProfiles})
   \item{"PDT (PAT-style Depth Temperature profiles) data"} (See \link{read_PDT}, \link{interpolate_TempDepthProfiles}, \link{get_thermalstrat} & \link{image_TempDepthProfiles})
   \item{"visualization of geolocation estimates"} (See: \link{plot_geopos})
   }
