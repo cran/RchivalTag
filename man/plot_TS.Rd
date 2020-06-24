@@ -126,7 +126,7 @@ additional arguments to be passed to \link{plot}.
 }
 }
 
-\seealso{\link{hist_tad}, \link{hist_tat}} 
+\seealso{\link{dy_DepthTS}, \link{plot_DepthTempTS}} 
 
 
 \author{

@@ -1,7 +1,7 @@
 
 image_TempDepthProfiles <- function(x, main=NULL, xlab='Date', ylab="Depth (m)", 
                                     cb.xlab=expression(paste("Temperature (",degree,"C)")), cex.cb.xlab=1, cex.cb.ticks=1,
-                                    xlim, ylim, zlim, pal="jet", only.months, month.line, mars, ...){
+                                    xlim, ylim, zlim, pal="jet", only.months, month.line=0, mars, ...){
   cmap <- NULL
   if(is.character(pal) & length(pal) == 1){
     data("cmap", package='oceanmap', envir = environment())

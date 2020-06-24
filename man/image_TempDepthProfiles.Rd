@@ -14,7 +14,7 @@ plots interpolated daily temperature at depth profiles, thus faciliating the ana
 image_TempDepthProfiles(x, main=NULL, xlab='Date', ylab="Depth (m)", 
                         cb.xlab=expression(paste("Temperature (",degree,"C)")), 
                         cex.cb.xlab=1, cex.cb.ticks=1,
-                        xlim, ylim, zlim, pal="jet", only.months, month.line, mars, ...)
+                        xlim, ylim, zlim, pal="jet", only.months, month.line=0, mars, ...)
 }
  
 
