@@ -14,7 +14,8 @@ plots interpolated daily temperature at depth profiles, thus faciliating the ana
 image_TempDepthProfiles(x, main=NULL, xlab='Date', ylab="Depth (m)", 
                         cb.xlab=expression(paste("Temperature (",degree,"C)")), 
                         cex.cb.xlab=1, cex.cb.ticks=1,
-                        xlim, ylim, zlim, pal="jet", only.months, month.line=0, mars, ...)
+                        xlim, ylim, zlim, pal="jet", only.months, month.line=0, 
+                        mars, axes=TRUE, do.colorbar=TRUE, ...)
 }
  
 
@@ -57,6 +58,10 @@ In case, that only.months is set \code{TRUE}, \code{month.line} defines the line
 a numerical vector defining the plot margins \code{c(bottom, left, top, right)} (by default \code{c(5,4,4,9)}).
 }
 
+\item{axes, do.colorbar}{
+whether the axes and colorbar should be plotted.
+}
+
 \item{\dots}{
 additional arguments to be passed to \link{set.colorbarp}
 }
@@ -65,7 +70,7 @@ additional arguments to be passed to \link{set.colorbarp}
 
 \references{
 Bauer, R., F. Forget and JM. Fromentin (2015) Optimizing PAT data transmission: assessing the accuracy of temperature summary data to estimate environmental conditions. Fisheries Oceanography, 24(6): 533-539, 
-\href{http://dx.doi.org/10.1111/fog.12127}{doi: 10.1111/fog.12127}
+\doi{10.1111/fog.12127}
 }
 
 \seealso{\link{read_PDT}, \link{bin_TempTS}, \link{get_thermalstrat}, \link{image_TempDepthProfiles}} 

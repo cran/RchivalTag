@@ -14,19 +14,19 @@ plot time series data (e.g. depth or temperature time series data from archival 
 
 \usage{
 dy_TS(ts_df, y="Depth", xlim, ylim, 
-           ylab=y, xlab="Time (UTC)", main,
+           ylab=y, xlab, main,
            ID, ID_label="Serial", 
            plot_DayTimePeriods=TRUE, twilight.set="ast", 
            color="darkblue",
-           doRangeSelector=TRUE, labelsUTC=TRUE, drawPoints=FALSE, pointSize=2, ...)
+           doRangeSelector=TRUE, drawPoints=FALSE, pointSize=2, tz="UTC",...)
 
 
 dy_DepthTS(ts_df, y="Depth", xlim, ylim, 
-           ylab=y, xlab="Time (UTC)", main,
+           ylab=y, xlab, main,
            ID, ID_label="Serial", 
            plot_DayTimePeriods=TRUE, twilight.set="ast", 
            color="darkblue",
-           doRangeSelector=TRUE, labelsUTC=TRUE, drawPoints=FALSE, pointSize=2, ...)
+           doRangeSelector=TRUE, drawPoints=FALSE, pointSize=2, tz="UTC", ...)
 }
  
 
@@ -71,12 +71,13 @@ whether to add dygraph interactive range selection and zooming bar below the fig
 
 }
 
-\item{labelsUTC}{
-Show date/time labels according to UTC (instead of local time), by default \code{TRUE}.
-}
 
 \item{drawPoints, pointSize}{
 Whether to indicate add points to the figure at the sampling time steps as well their size.
+}
+
+\item{tz}{
+The time zone in which the data should be illustrated (By default "UTC"). ATTENTION: The required date format of the input data is "UTC" (across all RchivalTag-functions). Run \code{OlsonNames(tzdir = NULL)} for valid time zone definitions.
 }
 
 
@@ -122,4 +123,5 @@ Robert K. Bauer
 #                  plot_DayTimePeriods = FALSE, drawPoints = TRUE)
 # dg <- dyOptions(dg,drawGrid=FALSE)
 # dg
+
 }

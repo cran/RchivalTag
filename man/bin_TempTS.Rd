@@ -15,7 +15,7 @@ In addition, temperature at depth profiles can be interpolated and then visualiz
 }
 
 \usage{
-bin_TempTS(ts, res=8)
+bin_TempTS(ts, res=8, verbose=FALSE)
 }
  
 
@@ -26,8 +26,11 @@ bin_TempTS(ts, res=8)
 \item{res}{the depth interval at which temperatures should be binned.
 }
 
+\item{verbose}{
+whether the sampling dates should be indicated during the binning process (by default \code{FALSE}).
 }
 
+}
 
 
 \value{
@@ -37,7 +40,7 @@ A \link{data.frame} with the columns \code{date}, \code{MeanTemp}, \code{MinTemp
 
 \references{
 Bauer, R., F. Forget and JM. Fromentin (2015) Optimizing PAT data transmission: assessing the accuracy of temperature summary data to estimate environmental conditions. Fisheries Oceanography, 24(6): 533-539, 
-\href{http://dx.doi.org/10.1111/fog.12127}{doi: 10.1111/fog.12127}
+\doi{10.1111/fog.12127}
 }
 
 

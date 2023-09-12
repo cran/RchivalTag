@@ -13,10 +13,10 @@ interpolates depth-temperature data and returns daily average temperature at dep
 
 \usage{
 interpolate_TempDepthProfiles(ts, Temp_field="Temperature", ID_key="Serial", %return_as_matrix=FALSE, 
-                              Depth_res=.5, show_info=TRUE, Data_Source='station')
+                              Depth_res=.5, verbose=TRUE, Data_Source='station')
                               
 interpolate_PDTs(ts, Temp_field="MeanPDT", ID_key="Serial", #return_as_matrix=FALSE, 
-                             Depth_res=.5, show_info=TRUE, Data_Source='station')
+                             Depth_res=.5, verbose=TRUE, Data_Source='station')
 }
  
 
@@ -29,7 +29,7 @@ interpolate_PDTs(ts, Temp_field="MeanPDT", ID_key="Serial", #return_as_matrix=FA
 numeric value, defining the depth resolution at which the temperature data should be interpolated.
 }
 
-\item{show_info}{
+\item{verbose}{
 whether the sampling dates and ids of stations or tags, as defined by the columns \code{date} and \code{ID_key},  
 should be indicated during the interpolation process.
 }
@@ -79,7 +79,7 @@ Please see the examples for further understaning.
 %}
 \references{
 Bauer, R., F. Forget and JM. Fromentin (2015) Optimizing PAT data transmission: assessing the accuracy of temperature summary data to estimate environmental conditions. Fisheries Oceanography, 24(6): 533-539, 
-\href{http://dx.doi.org/10.1111/fog.12127}{doi: 10.1111/fog.12127}
+\doi{10.1111/fog.12127}
 }
 
 \seealso{\link{read_PDT}, \link{bin_TempTS}, \link{get_thermalstrat}, \link{image_TempDepthProfiles}} 

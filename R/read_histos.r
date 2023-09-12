@@ -63,7 +63,7 @@ read_histos <- function(hist_file, date_format, lang_format="en", tz="UTC", dep.
         if(any(is.na(add0$datetime))) stop('Date-vector not in correct format (',date_format,')! Please choose a format corresponding to "',add0$Date[1],'".')
         add0$date <- as.Date(add0$datetime)
         if(!missing(dep.end)){
-          add0 <- add0[which(add0$date <= dep.end),]
+          add0 <- add0[which(add0$date < dep.end),]
         }
         
         info <- add0[,which(names(add0) %in% c(identifiers,'date','datetime',"Sum"))]
@@ -97,57 +97,53 @@ read_histos <- function(hist_file, date_format, lang_format="en", tz="UTC", dep.
         out$duration <- out$nrec <- NA
         
         if(nrow(out)>1){
-          # save(out, file="~/Desktop/file.rd")
-          # load("~/Desktop/file.rd",verbose = T)
-          # stop()
+
           hc <- .diff.time(out$datetime,units = "hours")
-          hc <- hc[which(hc %in% c(6,12,24))]
+          hc <- hc[which(hc %in% c(4,6,12,24))]
           # hc <- .datetime2hour.dc(out$datetime)
           # print(hc)
           # 
           # hc <- hc[which(abs(diff(hc)) %in% c(6,12,24))]
           # 
           out$tstep <- tstep <- abs(pracma::Mode(hc))*60*60 # from the pracma-package
-          
+
           tstep2 <- diff(as.numeric(c(out$datetime)))
           kk <- which(tstep2 < out$tstep[1])
           if(length(kk) > 0) out$tstep[kk] <- tstep2[kk]
           tstart <- as.numeric(c(out$datetime))
           tend <- as.numeric(c(out$datetime))+out$tstep
           
-          out$nperc_24h <-  round(100*(tend-tstart)/(60*60)/24,1)
-          out$nperc_24h
-          # out$nperc_24h[1] <- 100*(24-.datetime2hour.dc(out$datetime[1]))/24
+          out$nperc_dat <-  round(100*(tend-tstart)/(60*60)/24,1)
+          out$nperc_dat
+          # out$nperc_dat[1] <- 100*(24-.datetime2hour.dc(out$datetime[1]))/24
           out$duration <- tstep <- tstep/(60*60)
           out$tstep <- out$tstep/(60*60)
           out$nrec <- round(tend-tstart,1)/(60*60)
           
-          if(out$nperc_24h[1] < 0){
+          if(out$nperc_dat[1] < 0){
             hc <- .datetime2hour.dc(out$datetime)
             ik <- which(hc[2:(length(hc)-1)] == hc[1])
             if(length(hc[2:(length(hc)-1) == hc[1]])){
-              out$nperc_24h[1] <- out$nperc_24h[ik[1]+1]
+              out$nperc_dat[1] <- out$nperc_dat[ik[1]+1]
               out$nrec[1] <- out$nrec[ik[1]+1]
             }
           }
         }else{
           tstart <- as.numeric(c(out$datetime))
           tend <- as.numeric(.date2datetime(out$date[1]+1, midday = F, tz = "UTC"))
-          out$nperc_24h <- round(100*(tend-tstart)/(60*60)/24,1)
+          out$nperc_dat <- round(100*(tend-tstart)/(60*60)/24,1)
           tstep <- (tend-tstart)/(60*60)[1]
         }
         
         if(tstep < 24 & force_24h & nrow(out) > 1 & !missing(min_perc)){
           if(min_perc > 0){
-            warning("original ",Type, " histogram data with incompatible time step of ", tstep,"h. Summing up data to 24h intervals")
+            warning("Original ",Type, " histogram data with incompatible time step of ", tstep,"h. Summing up data to 24h intervals\n")
             out2 <- c()
             
             for(d in as.character(unique(out$date))){
               i <- which(out$date == d)
-              # save(out,i, file="~/Desktop/file.rd")
-              # load("~/Desktop/file.rd",verbose = T)
-              # stop()
-              x <- out[rep(i,out$nperc_24h[i]*100),grep("Bin",names(out))]
+
+              x <- out[rep(i,out$nperc_dat[i]*100),grep("Bin",names(out))]
               add <- out[i[1],]
               add[,grep("Bin",names(out))] <- apply(x,2,FUN = mean)
               add[which(is.na(add),arr.ind = T)] <- 0
@@ -157,15 +153,16 @@ read_histos <- function(hist_file, date_format, lang_format="en", tz="UTC", dep.
               stats <- .get_histos_stats(add[,grep("Bin",names(out))], bb, omit_negatives)
               # hist_list[[Type]][[id]]$bin_breaks <- stats$bin_breaks
               add <- cbind(info,stats$df)
-              add$nperc_24h <- sum(out$nperc_24h[i])
+              add$nperc_dat <- sum(out$nperc_dat[i])
+
+              if(any(add$nperc_dat > 120)) stop("Error in combining data. Reaching > 100%")
+              if(any(add$nperc_dat > 100)) add$nperc_dat[which(add$nperc_dat > 100)] <- 100
               add$nrec <- sum(out$nrec[i])
               add$duration <- sum(out$duration[i])
+              add$tstep <- 24
               
               out2 <- rbind(out2,add)
             }
-            # save(out,out2,file="~/Desktop/file.rd")
-            # load("~/Desktop/file.rd",verbose = T)
-            # stop()
             out <- out2
           }
         }
@@ -185,27 +182,24 @@ read_histos <- function(hist_file, date_format, lang_format="en", tz="UTC", dep.
             warning("Returning raw data")
           }else{
             
-            h <- plyr::ddply(df[,c("DeployID","Ptt","nperc_24h")],c("DeployID","Ptt"),function(x){
-              ii <- x$nperc_24h < min_perc
+            h <- plyr::ddply(df[,c("DeployID","Ptt","nperc_dat")],c("DeployID","Ptt"),function(x){
+              ii <- x$nperc_dat < min_perc
               c(kept=nrow(x[!ii,]),omitted=nrow(x[ii,]))})
             warning(message(paste0("Omitted the following number of ",Type," entries based on min_perc=",min_perc," argument!\n",paste0(capture.output(h), collapse = "\n"))))
-            df <- df[which(df$nperc_24h >= min_perc),]
+            df <- df[which(df$nperc_dat >= min_perc),]
             hist_list[[Type]][[id]]$df <- df
           }
         }
-        # save(df_combined,df,Type,file="~/Desktop/file.rd")
-        # load("~/Desktop/file.rd",verbose = T)
-        # stop()
         
         df$Type <- Type
         df_combined <- rbind(df_combined,df[,!grepl("Bin",names(df))])
       }
     }
   }
-  h <- plyr::ddply(df_combined[,c("DeployID","Ptt","nperc_24h","Type")],c("DeployID","Ptt","Type"),function(x){n=nrow(x); c(p0_25=round(100*nrow(x[which(x$nperc_24h <= 25),])/n,1),
-                                                                                                                            p0_50=round(100*nrow(x[which(x$nperc_24h <= 50),])/n,1),
-                                                                                                                            p0_75=round(100*nrow(x[which(x$nperc_24h <= 75),])/n,1),
-                                                                                                                            p0_90=round(100*nrow(x[which(x$nperc_24h <= 90),])/n,1))})
+  h <- plyr::ddply(df_combined[,c("DeployID","Ptt","nperc_dat","Type")],c("DeployID","Ptt","Type"),function(x){n=nrow(x); c(p0_25=round(100*nrow(x[which(x$nperc_dat <= 25),])/n,1),
+                                                                                                                            p0_50=round(100*nrow(x[which(x$nperc_dat <= 50),])/n,1),
+                                                                                                                            p0_75=round(100*nrow(x[which(x$nperc_dat <= 75),])/n,1),
+                                                                                                                            p0_90=round(100*nrow(x[which(x$nperc_dat <= 90),])/n,1))})
   if(any(h$p0_90 > 50) & missing(min_perc)) stop(paste("High percentage of missing data in at least one individual. please revise (e.g. filter with 'min_perc' argument)!\n", 
                                                        message(paste0(capture.output(h), collapse = "\n"))))
   return(hist_list)
@@ -238,7 +232,7 @@ combine_histos <- function(hist_list1,hist_list2){
     if(any(nn2 == nn1)){
       ii <- which(nn2 %in% nn1)
       wwarn <- paste(Type,'-data from tags with ids:\n',paste(nn2[ii],collapse=",\n"), '\nfound in hist_list2, existed already in hist_list1 and will be skipped.')
-      options(warning.length = nchar(wwarn)+10)
+      options(warning.length = max(c(nchar(wwarn)+10,100)))
       warning(wwarn)
       nn2 <- nn2[-ii]
     }
@@ -388,7 +382,7 @@ rebin_histos <- merge_histos <- function(hist_list, tad_breaks=NULL, tat_breaks=
             if(!all(common_bin_breaks %in% bb_ids[[ii]])) warn_ids <- c(warn_ids, ii)
           }
           wwarn <- paste0("user-specified ",tolower(Type),'_breaks not found for tags with ID codes:\n',paste(gsub('\\.', ' ', gsub('_',' - ',add$ID[warn_ids])),collapse="\n"),'\nThese tags were omitted!')
-          options(warning.length = nchar(wwarn)+10)
+          options(warning.length = max(c(nchar(wwarn)+10,100)))
           warning(wwarn)
           
         }else{
@@ -458,4 +452,75 @@ rebin_histos <- merge_histos <- function(hist_list, tad_breaks=NULL, tat_breaks=
 }
 
 
+.get_histos_stats <- function(df, bin_breaks, correct_negative_values){
+  
+  df_old <- df
+  bin_breaks_old <- bb <- bin_breaks
+  
+  ii <- which(bb <= 0)
+  if(length(ii) > 1){
+    df[,ii[1]] <- rowSums(df[,ii])
+    df <- df[,-ii[2:length(ii)]]
+    names(df) <- paste0("Bin",1:ncol(df))
+    bin_breaks <- c(0,bb[-ii])
+  }
+  if(length(ii) == 1){
+    bin_breaks[1] <- 0
+  }
+  
+  df[,length(bin_breaks)] <- NA
+  nbins <- length(bin_breaks)-1
+  vbins <- paste0("Bin",1:nbins)
+  mids <- bin_breaks[1:nbins]+diff(bin_breaks)/2
+  
+  df$SD <- df$avg <- NA
+  for(i in 1:nrow(df)){
+    s <- c()
+    for(j in 1:length(vbins)){
+      t <- df[[vbins[j]]][i]*86 # theoreticaly 8640 depth records per day if sampled every 10s
+      s <- c(s,rep(mids[j],t))
+    }
+    df$avg[i] <- mean(s,na.rm=T)
+    df$SD[i] <- sd(s,na.rm=T)
+  }
+  
+  out <- list(df=df,bin_breaks=bin_breaks)
+  if(!correct_negative_values){
+    if(all(df_old[,ncol(df_old)] == 0)) df_old[,ncol(df_old)] <- NA
+    df_old$avg <- df$avg
+    df_old$SD <- df$SD
+    out <- list(df=df_old,bin_breaks=bin_breaks_old)
+  }
+  return(out)
+}
 
+
+# .get_histos_stats <- function(df, bin_breaks, keep_WC_format){
+#   df_old <- df
+#   bin_breaks <- bin_breaks[2:(length(bin_breaks))]
+#   df[,1] <- df[,2]+df[,1]
+#   df[,2:(length(bin_breaks)-1)] <- df[,3:length(bin_breaks)]
+#   df[,length(bin_breaks)] <- NA
+#   nbins <- length(bin_breaks)-1
+#   vbins <- paste0("Bin",1:nbins)
+#   mids <- bin_breaks[1:nbins]+diff(bin_breaks)/2
+#   
+#   df$SD <- df$avg <- NA
+#   for(i in 1:nrow(df)){
+#     s <- c()
+#     for(j in 1:length(vbins)){
+#       t <- df[[vbins[j]]][i]*86 # theoreticaly 8640 depth records per day if sampled every 10s
+#       s <- c(s,rep(mids[j],t))
+#     }
+#     df$avg[i] <- mean(s,na.rm=T)
+#     df$SD[i] <- sd(s,na.rm=T)
+#   }
+#   
+#   df_new <- df
+#   if(keep_WC_format){
+#     df_old$avg <- df$avg
+#     df_old$SD <- df$SD
+#     df_new <- df_old
+#   }
+#   return(df_new)
+# }

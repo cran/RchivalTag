@@ -11,7 +11,7 @@ generates daily or back-to-back (e.g. Day-vs-Night-) Time-at-Temperature histogr
 }
 
 \details{
-Time-at-Temperature (Tat) and Time-at-Depth (TaD) fequencies are a standard data product of archival tags (incl. tag models TDR-Mk9, PAT-Mk10 and miniPAT by \href{http://wildlifecomputers.com/}{Wildlife Computers}) that allow to assess habitat preferences of tagged animals (see function \link{read_histos}).  It can be likewise generated from transmitted or recovered time series data sets using function \link{ts2histos}. 
+Time-at-Temperature (Tat) and Time-at-Depth (TaD) fequencies are a standard data product of archival tags (incl. tag models TDR-Mk9, PAT-Mk10 and miniPAT by \href{https://wildlifecomputers.com/}{Wildlife Computers}) that allow to assess habitat preferences of tagged animals (see function \link{read_histos}).  It can be likewise generated from transmitted or recovered time series data sets using function \link{ts2histos}. 
 
 However, different depth and temperature bin breaks are often used during different deployment programs, which makes a later comparitive analysis of TaT and TaT data difficult. For such cases, the function \link{combine_histos} and \link{merge_histos} can be applied to merge TaT and TaD frequencies based on common bin breaks of different tags.
 
@@ -93,6 +93,10 @@ side, line and font of plot title.
 colours to be used for the TaD-histogram, by default 'grey' and 'white' (corresponding to the values of split_by/split_levels).
 }
 
+\item{xticks, ylabels}{
+tick labels of the x-axis and ylabels of the y-axis to show in the plot.
+}
+
 \item{do_mid.ticks}{
 whether centered tick-labels, indicating the depth range of histogram cells, shall be plotted (by default \code{FALSE}). Alternatively, tick labels will be indicated at the breakpoints of the histrogram cells.
 }
@@ -105,8 +109,12 @@ x-axis coordinate at which the y-axis should be plotted (by default xlim[1], and
 a numerical vector of the form \code{c(bottom, left, top, right)}, decribing the number of margin lines to be specified on the each side of the plot. The default is \code{c(2.1, 4.1, 6.1, 2.1)}. In case that \code{do_mid.ticks} is \code{TRUE} margins are: \code{c(2.1, 8, 6.1, 2.1)}.
 }
 
-\item{plot_sd, plot_nrec , plot_ntags}{
-whether standard deviation bars, the number of records and tags shall be plotted (default is \code{TRUE}) inside the TaD/TaT histogram.
+\item{space}{
+the space between the histogram bars.
+}
+
+\item{plot_sd, plot_se, plot_nrec , plot_ntags}{
+whether standard deviation or standard error bars, the number of records and tags shall be plotted (default is \code{TRUE}) inside the TaD/TaT histogram. (if plot_se is \code{TRUE}, plot_sd will be overwritten!).
 }
 
 \item{cex, cex.main, cex.lab, cex.inf}{

@@ -13,17 +13,20 @@ line plot for xyz-time series data with colorized z-variable (e.g. depth-tempera
 }
 
 \usage{
-plot_DepthTempTS(ts_df, y="Depth", z="Temperature", xlim, ylim, zlim, pal="jet", 
-                 cb.xlab, cb.xlab.line=0, pt.lwd, do_interp=TRUE, 
-                 Return=FALSE, mars, ...)
+plot_DepthTempTS(ts_df, y="Depth", z="Temperature", 
+                 xlim, ylim, zlim, show.colorbar=TRUE, 
+                 pal="jet", cb.xlab, cb.xlab.line=0, 
+                 pt.lwd, do_interp=TRUE, Return=FALSE, mars, tz="UTC", ...)
                  
 plot_DepthTempTS_resampled(ts_df, y="Depth",z="Temperature", bin_res=10, 
-                           xlim, ylim, zlim, pal="jet", cb.xlab, cb.xlab.line=0,
-                           pt.lwd, do_interp=TRUE, Return=FALSE, mars, ...)
+                          xlim, ylim, zlim, show.colorbar=TRUE, 
+                           pal="jet", cb.xlab, cb.xlab.line=0,
+                           pt.lwd, do_interp=TRUE, Return=FALSE, mars, tz="UTC", ...)
                            
-plot_DepthTempTS_resampled_PDT(ts_df, PDT, y="Depth", z="Temperature", xlim, ylim, zlim, 
-                               pal="jet", cb.xlab, cb.xlab.line=0, pt.lwd, 
-                               do_interp=TRUE, Return=FALSE, mars, ...)
+plot_DepthTempTS_resampled_PDT(ts_df, PDT, y="Depth", z="Temperature", 
+                               xlim, ylim, zlim, show.colorbar=TRUE, 
+                               pal="jet", cb.xlab, cb.xlab.line=0,  
+                               pt.lwd, do_interp=TRUE, Return=FALSE, mars, tz="UTC", ...)
 }
  
 
@@ -52,6 +55,9 @@ plot_DepthTempTS_resampled_PDT(ts_df, PDT, y="Depth", z="Temperature", xlim, yli
 \item{zlim}{the y limits of the plot (by default range(ts_df[[z]])).
 }
 
+\item{show.colorbar}{weather a colorbar should be plotted for image plots (default is \code{TRUE}).
+}
+
 \item{pal}{
   color map to be plotted (default is the 'jet'-colormap of the \link{oceanmap}-package. See \link{cmap} for available color maps.
 }
@@ -73,6 +79,10 @@ whether edited time series data set should be returned (by default \code{FALSE})
 
 \item{mars}{
 A numerical vector of the form c(bottom, left, top, right) which gives the number of lines of margin to be specified on the four sides of the plot. The default is c(5,4,4,10).
+}
+
+\item{tz}{
+The time zone in which the data should be illustrated (By default "UTC"). ATTENTION: The required date format of the input data is "UTC" (across all RchivalTag-functions).
 }
 
 \item{\dots}{

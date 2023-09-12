@@ -15,29 +15,29 @@ plotting functions for time series data (e.g. depth or temperature time series d
 
 \usage{
 plot_DepthTS(ts_df, y="Depth", xlim, ylim, xticks_interval,
-             ylab=y, xlab="Time (UTC)", main, main.line=1, plot_info=TRUE, 
+             ylab=y, xlab, main, main.line=1, plot_info=TRUE, 
              ID, ID_label="Serial",
              plot_DayTimePeriods=FALSE, twilight.set="ast", 
              cex=1, cex.main=1.2*cex, cex.lab=1*cex, 
              cex.axis=.9*cex, cex.axis2=1*cex, 
              type="l", las=1, xaxs="i", yaxs="i", 
-             plot_box=TRUE, bty="l", Return=FALSE, ...)
+             plot_box=TRUE, bty="l", Return=FALSE, tz="UTC",...)
              
            
 plot_TS(ts_df, y="Depth", xlim, ylim, xticks_interval,
-        ylab=y, xlab="Time (UTC)", main, main.line=1, plot_info=TRUE, 
+        ylab=y, xlab, main, main.line=1, plot_info=TRUE, 
         ID, ID_label="Serial",
         plot_DayTimePeriods=FALSE, twilight.set="ast", 
         cex=1, cex.main=1.2*cex, cex.lab=1*cex, 
         cex.axis=.9*cex, cex.axis2=1*cex, 
         type="l", las=1, xaxs="i", yaxs="i", 
-        plot_box=TRUE, bty="l", Return=FALSE, ...)
+        plot_box=TRUE, bty="l", Return=FALSE, tz="UTC", ...)
        
-empty.plot_TS(xlim, ylim, xticks_interval, ylab="", xlab="Time (UTC)", main="",
+empty.plot_TS(xlim, ylim, xticks_interval, ylab="", xlab, main="",
               cex=1, cex.main=1.2*cex, cex.lab=1*cex, 
               cex.axis=.9*cex, cex.axis2=1*cex,               
-              las=1, xaxs="i", yaxs="i", do_yaxis = TRUE,
-              plot_box=TRUE, bty="l", ...)
+              las=1, xaxs="i", yaxs="i", do_xaxis=TRUE, do_yaxis = TRUE,
+              plot_box=TRUE, bty="l", tz="UTC", ...)
 }
  
 
@@ -58,7 +58,7 @@ empty.plot_TS(xlim, ylim, xticks_interval, ylab="", xlab="Time (UTC)", main="",
 }
 
 \item{ylab, xlab}{
-the y- and x-axis labels. 
+the y- and x-axis labels. By default xlab="Time (UTC)" and ylab = "Depth (m)"
 }
 
 \item{main, main.line}{
@@ -105,11 +105,11 @@ Style "i" (internal) just finds an axis with pretty labels that fits within the 
 }
 
 \item{plot_DayTimePeriods, twilight.set}{
-whether day-time periods ('Night', 'Dawn', 'Day', 'Dusk') should be plotted as shaded areas. In case that \code{plot_DayTimePeriods} is set \code{TRUE}), the limits of each time period are required (columns \code{sunrise}, \code{sunset}, \code{dawn.ast},/\code{dawn.naut} and \code{dawn.ast}/\code{dawn.naut} in \code{POSIXct}-format. In case of the twilight events, the additional argument \code{twilight.set} defines the suffix of the twlight-set to be selected ( \code{"ast"} for astronomical dawn and dusks vs \code{"naut"} for nautical twilight events).
+whether day-time periods ('Night', 'Dawn', 'Day', 'Dusk') should be plotted as shaded areas. In case that plot_DayTimePeriods is set \code{TRUE}, the limits of each time period are required (columns \code{sunrise}, \code{sunset}, \code{dawn.ast},/\code{dawn.naut} and \code{dawn.ast}/\code{dawn.naut} in \code{POSIXct}-format. In case of the twilight events, the additional argument \code{twilight.set} defines the suffix of the twlight-set to be selected ( \code{"ast"} for astronomical dawn and dusks vs \code{"naut"} for nautical twilight events).
 If any of the day-time columns, described above, is missing, it/they will be calculated based on geolocation estimates (required columns \code{Lon} and \code{Lat}) through an internal call of function \code{get_DayTimeLimits}.\cr
 }
 
-\item{do_yaxis}{Optional argument in empty.plot_TS to define whether a y-axis shall be plotted (by default \code{TRUE}).
+\item{do_xaxis,do_yaxis}{Optional arguments in empty.plot_TS to define whether a x and and y-axis shall be plotted (by default \code{TRUE}).
 }
 
 \item{plot_box, bty}{
@@ -121,12 +121,16 @@ whether a box of box-type \code{bty} should be plotted (by default \code{TRUE}. 
 whether edited time series data set should be returned (by default \code{FALSE}).
 }
 
+\item{tz}{
+The time zone in which the data should be illustrated (By default "UTC"). ATTENTION: The required date format of the input data is "UTC" (across all RchivalTag-functions). Run \code{OlsonNames(tzdir = NULL)} for valid time zone definitions.
+}
+
 \item{\dots}{
 additional arguments to be passed to \link{plot}.
 }
 }
 
-\seealso{\link{dy_DepthTS}, \link{plot_DepthTempTS}} 
+\seealso{\link{ggboxplot_DepthTS_by_hour}, \link{dy_DepthTS}, \link{plot_DepthTempTS}} 
 
 
 \author{

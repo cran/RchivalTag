@@ -3,7 +3,7 @@ hist_tat <- function(df,
                      bin_breaks=NULL, bin_prefix="Bin", 
                      main, xlab="Time at Temperature (%)", ylab=expression(paste("Temperature (",degree,"C)")), labeling=TRUE,
                      Type="TAT", ...) {
-  hist_tad(df=df, bin_breaks=bin_breaks, bin_prefix=bin_prefix, 
+  hist_tad(df=df, bin_breaks=bin_breaks, bin_prefix=bin_prefix,
            main=main, xlab=xlab, ylab=ylab, labeling=labeling, Type=Type, ...)
 }
 
@@ -19,16 +19,17 @@ hist_tad <- function(df,
                      xlab2.side=1, xlab2.line=1, xlab2.font=2,
                      main.side=3, main.line=3.8, main.font=1,
                      col=c("darkgrey", "white"), 
+                     xticks, ylabels,
                      do_mid.ticks=TRUE, yaxis.pos=0, 
-                     mars,
+                     mars, space=0, 
                      #                      do.last.bin=FALSE, do.greater.than.sign=TRUE, 
-                     plot_sd=TRUE, plot_nrec=TRUE, plot_ntags=TRUE,
-                     cex=1.2, cex.main=cex, cex.lab=cex, cex.inf=cex, 
+                     plot_sd=TRUE, plot_se, plot_nrec=TRUE, plot_ntags=TRUE,
+                     cex=1.2, cex.main=cex, cex.lab=cex, cex.inf=cex.axis, cex.axis=1, 
                      return.sm=FALSE, 
                      subplot=FALSE, inside=FALSE,Type="TAD"){
   
   if(!inside & !subplot){
-    if(missing(mars)) mars <- c(2.1, 5.1, 6.1, 2.1)
+    if(missing(mars)) mars <- c(4.1, 7.1, 6.1, 3.5)
     if(missing(ylab.line)) ylab.line <- 3
     if(do_mid.ticks)  {
       if(mars[2] == 4.1) mars[2] <- 8
@@ -41,7 +42,7 @@ hist_tad <- function(df,
     if(inside) ylab=''
   }
   
-  if(class(df) == "list"){
+  if(extends(class(df), 'list')){
     hist_list <- list()
     if(!is.null(df[[Type]]))  hist_list[[Type]] <- df[[Type]]
     if(missing(split_by) & "split_by" %in% names(hist_list[[Type]]$merged)) {
@@ -59,6 +60,7 @@ hist_tad <- function(df,
       hist_list <- hist_list_new
     }
     IDs <- names(hist_list[[Type]])
+    
     if(length(IDs) > 1) cat('data from several IDs found (that will be plotted seperately):',paste(IDs,sep=", "),"\n")
     for(ID in IDs){
       df <- hist_list[[Type]][[ID]]$df
@@ -75,11 +77,12 @@ hist_tad <- function(df,
                xlab2.side=xlab2.side, xlab2.line=xlab2.line, xlab2.font=xlab2.font,
                main.side=main.side, main.line=main.line, main.font=main.font,
                col=col, 
+               xticks,
                do_mid.ticks=do_mid.ticks, yaxis.pos=yaxis.pos, 
-               mars=mars,
+               mars=mars,space=space,
                #                      do.last.bin=FALSE, do.greater.than.sign=TRUE, 
-               plot_sd=plot_sd, plot_nrec=plot_nrec, plot_ntags=plot_ntags,
-               cex=cex, cex.main=cex.main, cex.lab=cex.lab, cex.inf=cex.inf, 
+               plot_sd=plot_sd, plot_se=plot_se, plot_nrec=plot_nrec, plot_ntags=plot_ntags,
+               cex=cex, cex.main=cex.main, cex.lab=cex.lab, cex.inf=cex.inf, cex.axis=cex.axis,
                return.sm=return.sm, 
                subplot=subplot, inside=inside,Type=Type)
     }
@@ -123,24 +126,28 @@ hist_tad <- function(df,
       }
       
       if(!missing(min_perc)) {
-        h <- ddply(tad.df[,c("DeployID","Ptt","nperc_24h")],c("DeployID","Ptt"),function(x){
-          ii <- x$nperc_24h < min_perc
+        h <- ddply(tad.df[,c("DeployID","Ptt","nperc_dat")],c("DeployID","Ptt"),function(x){
+          ii <- x$nperc_dat < min_perc
           c(kept=nrow(x[!ii,]),omitted=nrow(x[ii,]))})
         warning(paste(message(paste0("Omitted the following number of entries based on min_perc=",min_perc," argument!\n",paste0(capture.output(h), collapse = "\n"))),
                       "\nOriginal data untouched! (rerun 'ts2histos' to delete the data)"))
-        tad.df <- tad.df[which(tad.df$nperc_24h >= min_perc),]
+        tad.df <- tad.df[which(tad.df$nperc_dat >= min_perc),]
         
       }
-      
-      h <- ddply(tad.df[,c("DeployID","Ptt","nperc_24h")],c("DeployID","Ptt"),function(x){n=nrow(x); c(p0_25=round(100*nrow(x[which(x$nperc_24h <= 25),])/n,1),
-                                                                                               p0_50=round(100*nrow(x[which(x$nperc_24h <= 50),])/n,1),
-                                                                                               p0_75=round(100*nrow(x[which(x$nperc_24h <= 75),])/n,1),
-                                                                                               p0_90=round(100*nrow(x[which(x$nperc_24h <= 90),])/n,1))})
-      if(any(h$p0_50 > 50)){
-        stop(paste("High percentage of missing data in at least one individual. please revise (e.g. filter with 'min_perc' argument)!\n", 
-                   message(paste0(capture.output(h), collapse = "\n"))))
+      if(missing(min_perc)){
+        h <- ddply(tad.df[, c("DeployID", "Ptt", "nperc_dat")],c("DeployID","Ptt"),function(x){n=nrow(x); c(nrecs0_25=nrow(x[which(x$nperc_dat <= 25),]),
+                                                                                   nrecs0_50=nrow(x[which(x$nperc_dat <= 50),]),
+                                                                                   nrecs0_75=nrow(x[which(x$nperc_dat <= 75),]),
+                                                                                   nrecs0_90=nrow(x[which(x$nperc_dat <= 90),]),
+                                                                                   nrecs_all=n,
+                                                                                   perc0_25=round(100*nrow(x[which(x$nperc_dat <= 25),])/n,1),
+                                                                                   perc0_50=round(100*nrow(x[which(x$nperc_dat <= 50),])/n,1),
+                                                                                   perc0_75=round(100*nrow(x[which(x$nperc_dat <= 75),])/n,1),
+                                                                                   perc0_90=round(100*nrow(x[which(x$nperc_dat <= 90),])/n,1)
+        )})
+        if(any(h$perc0_50 > 50) & missing(min_perc)) stop(paste("High percentage of missing data in at least one individual (e.g. nrecs0_25 and perc0_25 correspond to the number and percentage of days or daytime periods with less than 25% of missing data). Please revise (e.g. filter with 'min_perc' argument)!\n", 
+                                                                message(paste0(capture.output(h), collapse = "\n"))))
       }
-      
       
       
       if(!missing(select_id)){
@@ -154,8 +161,16 @@ hist_tad <- function(df,
       
       tdb <- paste0(bin_prefix, 1:length(bin_breaks))
       if(length(tad.df) < length(bin_prefix)) tad.df[[tdb[which(!(tdb %in% names(tad.df)))[1]]]] <- NA # add additional column if required
+      
       tad.sm <- .tad_summary(tad.df, vars=split_by, bin_prefix=bin_prefix)
-      #     head(tad.sm)
+      if(!missing(plot_se)) {
+        plot_sd <- !plot_se
+      }else{
+        plot_se <- !plot_sd
+      }
+      # if(plot_se) plot_sd <- F
+      if(plot_sd) {tad.sm <- tad.sm[-grep("se",tad.sm$info),]}
+      if(plot_se) {tad.sm <- tad.sm[-grep("sd",tad.sm$info),]}
       
       raw <- tad.sm[, which(names(tad.sm) %in% tdb)]
       raw.sd <- plyr::ddply(tad.sm, split_by, function(x) apply(x[, which(names(tad.sm) %in% tdb)], 2, sum, na.rm=T))
@@ -164,44 +179,58 @@ hist_tad <- function(df,
       
       if(adaptive.xlim) {
         xlim <- range(c(0, raw[tad.sm$info == 'mean', ]), na.rm=T)
-        if(plot_sd) xlim <- range(c(0, raw.sd))
+        if(plot_sd | plot_se) xlim <- range(c(0, raw.sd))
+        
       }
       
       #################### merged plot:
       if(length(split_by) == 0){
         
         if(length(grep('Night', names(tad.df))) == 1) stop('day-night data provided, but not selected for plotting! please revise!')
-        bbins <- barplot(rev(unlist(raw[1, ])), horiz=T, space=F, main="", ylab="", xlab="", axes=F, col=col[1], xlim=xlim)
+        bbins <- barplot(rev(unlist(raw[1, ])),plot=F,space=space)
+        step <- diff(bbins)[1]/2
+        AT <- seq(min(bbins)+step, max(bbins)+step, by=2*step)
         
-        if(plot_sd){
+        bbins <- barplot(rev(unlist(raw[1, ])), horiz=T, space=space, main="", ylab="", xlab="", axes=F, col=col[1], xlim=xlim, ylim=range(AT))
+        
+        if(plot_sd | plot_se){
           .plot_errorbars(k=unlist(raw[1, ]), k.sd=unlist(raw[2, ]), bbins)
         }
         if(!inside){
-          axis(3)
+          if(missing(xticks)) xticks <- pretty(xlim)
+          axis(3,at=xticks,cex.axis=cex.axis)
           tick.labels <- bin_breaks
         }
         xticks <- seq(par()$xaxp[1], par()$xaxp[2], length.out=par()$xaxp[3]+1)
         ntags <- nrow(unique(tad.df[,which(names(tad.df) %in% c('NumBins','Serial','Ptt','DeployID'))]))
-        if(plot_nrec) text(xticks[par()$xaxp[3]], 1.5, paste0("n = ", nrow(tad.df), " days of data"), xpd=T, pos=1, cex=cex.inf)
-        if(plot_ntags) text(xticks[par()$xaxp[3]], .5, paste0("(", ntags, .switch_if(ntags == 1, " tag)"," tags)")), xpd=T, pos=1, cex=cex.inf)
+        if(plot_nrec) text(xticks[par()$xaxp[3]], AT[1]+.1, paste0("n = ", nrow(tad.df), " days of data"), xpd=T, pos=1, cex=cex.inf)
+        if(plot_ntags) text(xticks[par()$xaxp[3]], AT[1]-.8-space, paste0("(", ntags, .switch_if(ntags == 1, " tag)"," tags)")), xpd=T, pos=1, cex=cex.inf)
         
         if(do_mid.ticks){
-          axis(2, pos=0, at=1:(length(bin_breaks)), labels=rep("", length(tick.labels)), las=1)        
+          axis(2, pos=0, at=AT, labels=rep("", length(AT)), las=1,cex.axis=cex.axis)
+          # axis(2, pos=0, at=1:(length(bin_breaks)), labels=rep("", length(tick.labels)), las=1)
+          ylabels_keep <- tick.labels
+          if(!missing(ylabels)) ylabels_keep <- ylabels
           ylabels <- rev(tick.labels)
-
+          
           # old code: ylabels2 <- cbind(c(intToUtf8(8805), ylabels[2:length(ylabels)]+1), c(ylabels[1], ylabels[1:length(ylabels)-1]))
           ylabels2 <- cbind(c(ylabels[2:length(ylabels)]+1), c(ylabels[1:length(ylabels)-1]))
           ylabels2[nrow(ylabels2),1] <- tail(ylabels,1)
           ylabels2a <- apply(ylabels2, 1, function(x) paste(x[1], x[2], sep=""))
           ylabels2a <- apply(ylabels2, 1, function(x) paste(x[1], x[2], sep="-"))
-          # axis(2, pos=xlim[1]+yaxis.pos, at=(0.5:(ncol(raw)-0.5)), lwd="", labels=ylabels2a, las=1)
+          ylabels2a[which(!(ylabels %in% ylabels_keep))-1] <- ""
           
-          ylabels2a <- ylabels2a
-          ylabels2a
-          axis(2, pos=xlim[1]+yaxis.pos, at=(1.5:(ncol(raw)-.5)), lwd="", labels=ylabels2a, las=1)
-
+          axis(2, pos=xlim[1]+yaxis.pos, at=bbins[2:length(bbins)], lwd="", labels=ylabels2a, las=1,cex.axis=cex.axis)
+          
         }else{
-          axis(2, pos=0, at=1:(length(bin_breaks)), labels=rev(tick.labels), las=1)
+          ylabels_keep <- tick.labels
+          if(!missing(ylabels)) ylabels_keep <- ylabels
+          ylabels <- rev(tick.labels)
+          ylabels[which(!(ylabels %in% ylabels_keep))] <- ""
+          
+          axis(2, pos=0, at=AT, labels=ylabels, las=1,cex.axis=cex.axis)
+          # axis(2, pos=0, at=AT, labels=rev(tick.labels), las=1)
+          
         }
         
         ################# day-night plot:
@@ -213,26 +242,35 @@ hist_tad <- function(df,
         par(xaxs="i", yaxs="i") # c(bottom, left, top, right)
         raw.left <- raw[left, ]
         raw.right <- raw[right, ]
+        bbins <- barplot(-rev(unlist(raw.left[1, ])),plot=F,space=space)
+        step <- diff(bbins)[1]/2
+        AT <- seq(min(bbins)+step, max(bbins)+step, by=2*step)
         
-        bbins <- barplot(-rev(unlist(raw.left[1, ])), horiz=T, xlim=xlim, space=0, axes=F, col=col[1])
-        barplot(rev(unlist(raw.right[1, ])), horiz=T, add=T, space=0, axes=F, col=col[2], main="")
+        barplot(-rev(unlist(raw.left[1, ])), horiz=T, xlim=xlim, space=space, axes=F, col=col[1], ylim=range(AT))
+        barplot(rev(unlist(raw.right[1, ])), horiz=T, add=T, space=space, axes=F, col=col[2], main="", ylim=range(AT))
         
-        if(plot_sd){
+        if(plot_sd | plot_se){
           .plot_errorbars(k=-unlist(raw.left[1, ]), k.sd=-unlist(raw.left[2, ]), bbins)
           .plot_errorbars(k=unlist(raw.right[1, ]), k.sd=unlist(raw.right[2, ]), bbins)
         }
         
-        xticks <- pretty(xlim)
+        if(missing(xticks)) {
+          xticks <- pretty(xlim)
+        }else{
+          xticks <- c(-xticks, xticks)
+        }
         xlabels <- abs(xticks)
+        ylabels_keep <- rev(bin_breaks)
+        if(!missing(ylabels)) ylabels_keep <- ylabels
         ylabels <- rev(bin_breaks)
         #       if(!labeling){
         #         xlabels <- rep('', length(xlabels))
         #         ylabels <- rep('', length(ylabels))
         #       }
-        axis(3, at=xticks, labels=xlabels)
+        axis(3, at=xticks, labels=xlabels,cex.axis=cex.axis)
         if(do_mid.ticks){
-          
-          axis(2, pos=xlim[1]+yaxis.pos, at=(1:ncol(raw)), labels=rep("", ncol(raw)), las=1)
+          axis(2, pos=xlim[1]+yaxis.pos, at=AT, labels=rep("", length(AT)), las=1,cex.axis=cex.axis)
+          # axis(2, pos=xlim[1]+yaxis.pos, at=(1:ncol(raw)), labels=rep("", ncol(raw)), las=1)
           
           # ylabels2 <- cbind(c(intToUtf8(8805), ylabels[2:length(ylabels)]), c(ylabels[1], ylabels[1:length(ylabels)-1]-1))
           # ylabels2a <- apply(ylabels2, 1, function(x) paste(x[1], x[2], sep=""))
@@ -248,31 +286,35 @@ hist_tad <- function(df,
           ylabels2[nrow(ylabels2),1] <- tail(ylabels,1)
           ylabels2a <- apply(ylabels2, 1, function(x) paste(x[1], x[2], sep=""))
           ylabels2a <- apply(ylabels2, 1, function(x) paste(x[1], x[2], sep="-"))
+          ylabels2a[which(!(ylabels %in% ylabels_keep))-1] <- ""
           
-
-          axis(2, pos=xlim[1]+yaxis.pos, at=(1.5:(length(ylabels2a)+0.5)), lwd="", labels=ylabels2a, las=1)
+          axis(2, pos=xlim[1]+yaxis.pos, at=bbins[2:length(bbins)], lwd="", labels=ylabels2a, las=1, cex.axis=cex.axis)
+          
+          # axis(2, pos=xlim[1]+yaxis.pos, at=(1.5:(length(ylabels2a)+0.5)), lwd="", labels=ylabels2a, las=1)
           
         }else{
-          axis(2, pos=xlim[1]+yaxis.pos, at=(1:length(ylabels)), c(ylabels), las=1)
+          ylabels[which(!(ylabels %in% ylabels_keep))] <- ""
+          axis(2, pos=xlim[1]+yaxis.pos, at=AT, labels=ylabels, las=1, cex.axis=cex.axis)
+          # axis(2, pos=xlim[1]+yaxis.pos, at=(1:length(ylabels)), c(ylabels), las=1)
           
           # axis(2, pos=xlim[1]+yaxis.pos, at=(0:length(ylabels)), c("", ylabels), las=1)
         }      
         
         if(xlab2.side == 1){
           xdiff <- par()$usr[2]/2
-          text(-xdiff, 1.2, xlab2[1], xpd=T, font=2, cex=cex.inf)
-          text(xdiff, 1.2, xlab2[2], xpd=T, font=2, cex=cex.inf)
+          text(-xdiff, AT[1]-.2, xlab2[1], xpd=T, font=2, cex=cex.inf)
+          text(xdiff, AT[1]-.2, xlab2[2], xpd=T, font=2, cex=cex.inf)
           if(plot_nrec){
-            text(-xdiff, .5, paste0("n(periods) = ", tad.sm$nrec[which(tad.sm[[split_by]] == split_levels[1])]), xpd=T, cex=cex.inf-.1)
-            text(xdiff, .5, paste0("n(periods) = ", tad.sm$nrec[which(tad.sm[[split_by]] == split_levels[2])]), xpd=T, cex=cex.inf-.1)
+            text(-xdiff, AT[1]-1.1-space, paste0("n(periods) = ", tad.sm$nrec[which(tad.sm[[split_by]] == split_levels[1])]), xpd=T, cex=cex.inf-.1)
+            text(xdiff, AT[1]-1.1-space, paste0("n(periods) = ", tad.sm$nrec[which(tad.sm[[split_by]] == split_levels[2])]), xpd=T, cex=cex.inf-.1)
           }
           #           if(plot_ntags){
           #             text(-xdiff, .5, paste0("n(tags) = ", tad.sm$nrec[which(tad.sm[[split_by]] == split_levels[1])]), xpd=T, cex=cex.inf-.1)
           #             text(xdiff, .5, paste0("n(tags) = ", tad.sm$nrec[which(tad.sm[[split_by]] == split_levels[2])]), xpd=T, cex=cex.inf-.1)
           #           }
         }else{
-          axis(3, at=-mean(xlim0), line=xlab2.line, labels = xlab2[1], cex=cex.inf, lwd=0, font=xlab2.font)
-          axis(3, at=mean(xlim0), line=xlab2.line, labels = xlab2[2], cex=cex.inf, lwd=0, font=xlab2.font)
+          axis(3, at=-mean(xlim0), line=xlab2.line, labels = xlab2[1], cex=cex.inf, lwd=0, font=xlab2.font, cex.axis=cex.axis)
+          axis(3, at=mean(xlim0), line=xlab2.line, labels = xlab2[2], cex=cex.inf, lwd=0, font=xlab2.font, cex.axis=cex.axis)
         }
       }
       

@@ -13,7 +13,7 @@ resample time series data at a lower resolution
 }
 
 \usage{
-resample_TS(df, tstep)
+resample_TS(df, tstep, nsims)
 }
  
 
@@ -21,7 +21,10 @@ resample_TS(df, tstep)
 \item{df}{\link{data.frame} holding the time series data to be resampled, including a 'datetime'-vector (in \code{POSIXct}-format  and UTC).
 }
 
-\item{tstep}{numeric vector indicating the resampling resolution in seconds).
+\item{tstep}{numeric vector indicating the resampling resolution (in seconds).
+}
+
+\item{nsims}{number of simulated datasets to be generated. If missing, the maximum number of datasets will be returned, based on a moving window of the temporal resolution of the input dataset.
 }
 
 }
