@@ -1,10 +1,10 @@
-1a6793861e99b14d1b17d049329f6409 *ChangeLog
-06b76c2d0fe122b3a7e608e52d3a05c0 *DESCRIPTION
-dffa58069bfa489189fb89186bbefc77 *NAMESPACE
+a3e1a5498b858a2e04bbf94f72259bdb *ChangeLog
+2f7672ad898dd5580bdfde677ef5c95f *DESCRIPTION
+b712befcdb9e4a78acbaaa68cf12652d *NAMESPACE
 3ae747991a6f1b4da8bda5e3c8f8cb5f *R/bin_TempTS.r
 e143a52a78e919b478f516079f49dea5 *R/dy_DepthTS.r
 f873e0b8c23a7ec2783872a83889f639 *R/get_DaytTimeLimits.r
-d364f6504cc274134b4f74fe4c7f8167 *R/get_geopos.r
+64002015cca35f54927e1b93847fac08 *R/get_geopos.r
 705ef0d16ead1548bf29af04de8a7703 *R/get_thermalstrat.r
 28bd242f99c05e6f40c9dccae5d076a8 *R/ggboxplot_DepthTS_by_hour.r
 7c4a0e7366ba4f408339411f813b1bcd *R/ggplot_geopos.r
@@ -27,7 +27,7 @@ b28a58c18cf690037b454cc54fb283c9 *R/resample_TS.r
 7c2a2ecbb04b4299e6922f378c345656 *R/tad_summary.r
 aee2c2c145bb1b9ac7b6e7608c04509c *R/ts2histos.r
 439bf689fa27cf9affd0335332142165 *build/partial.rdb
-587f885e70c8734e1ba58705a93eb0fd *inst/doc/RchivalTag.pdf
+2625919f58ed2a50fcdf8c078fcf43fb *inst/doc/RchivalTag.pdf
 5ed8535044dcec09af091dca0617ac41 *inst/example_files/104659-Histos.csv
 14919538772cfbcc8dde94b889ede6f9 *inst/example_files/104659-PDTs.csv
 ec53f903951050e6c4f96a0b7be076b8 *inst/example_files/104659-Series.csv
