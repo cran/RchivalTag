@@ -59,7 +59,7 @@ plot_DepthTempTS_resampled_PDT(ts_df, PDT, y="Depth", z="Temperature",
 }
 
 \item{pal}{
-  color map to be plotted (default is the 'jet'-colormap of the \link{oceanmap}-package. See \link{cmap} for available color maps.
+  color map to be plotted (default is the 'jet'-colormap of the \link[oceanmap]{oceanmap}-package. See \link[oceanmap]{cmap} for available color maps.
 }
 
 \item{cb.xlab, cb.xlab.line}{

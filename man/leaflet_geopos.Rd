@@ -16,7 +16,7 @@ leaflet_geopos(data, ID_label, add_label=NULL, except_label=NULL,
 }
 
 \arguments{
-\item{data}{spatial data such as \link{data.frame} or \link{SpatialPolygonsDataFrame}.
+\item{data}{spatial data such as \link{data.frame} or \link[sp]{SpatialPolygonsDataFrame}.
 }
 
 \item{ID_label}{
@@ -36,7 +36,7 @@ circle size, in case of simple Lon/Lat tracking dataframes.
 }
 
 \item{pal}{
-  color map to be plotted in case of polygon (.nc-files) or scatter plots (default is the 'jet'-colormap, and 'year.jet' in case \code{standard_year} & \code{full_year} are set \code{TRUE}). See \link{cmap} for pre-installed color maps. Note that tracking data with constant time steps is being assumed in the color assignment. To verify this, a \link{data.frame} containing the colors at each time steps will be returned for polygon and scatter plots.
+  color map to be plotted in case of polygon (.nc-files) or scatter plots (default is the 'jet'-colormap, and 'year.jet' in case \code{standard_year} & \code{full_year} are set \code{TRUE}). See \link[oceanmap]{cmap} for pre-installed color maps. Note that tracking data with constant time steps is being assumed in the color assignment. To verify this, a \link{data.frame} containing the colors at each time steps will be returned for polygon and scatter plots.
 }
 
 \item{layer_title}{

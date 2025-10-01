@@ -143,4 +143,22 @@
 #   return(df.new)
 # }
 
-
+.remove_geom <- function (p, geom, idx = NULL) # from deprecated ggedit package
+{
+  layers <- p$layers
+  layer.type <- lapply(p$layers, function(x) class(x$geom))
+  a.rm <- which(grepl(paste0("(?i)", geom), layer.type))
+  if (length(a.rm) == 0) {
+    stop(paste0("There are no ", geom, " layers available in the plot to remove"), 
+         call. = FALSE)
+  }
+  if (is.null(idx)) {
+    idx <- length(a.rm)
+  }
+  if (length(a.rm) >= idx) {
+    a.rm <- a.rm[idx]
+  }
+  layers <- layers[-a.rm]
+  p$layers <- layers
+  return(p)
+}

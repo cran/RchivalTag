@@ -94,7 +94,7 @@ the tick labels of the colorbar and it's font size.
 }
 
 \item{pal, bg}{
-the color palette of the colorbar (either a vector or a single keyword referring to a colorbar from the colorbars of the \link{oceanmap} package) as well as the background color of the data coverage abacus plot.
+the color palette of the colorbar (either a vector or a single keyword referring to a colorbar from the colorbars of the \link[oceanmap]{oceanmap} package) as well as the background color of the data coverage abacus plot.
 Please note also, that if the argument 'na.omit' is set to FALSE, missing data points will be shaded in grey.
 }
 

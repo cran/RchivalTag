@@ -13,7 +13,7 @@ ggplotly_geopos(ggobj, fixedrange=F, grid=F,expand=10)
 }
 \arguments{
   \item{ggobj}{
-Character string identifying regions predefined by the \link{region_definitions}-dataset, Raster* or Extent object (corresponds to \code{v_area} of the \link{v}-function). If missing, region is derived from geographical coordinates, denoted by lat and lon. See \link{add.region} to define new region definitions and \link{delete.region} to delete unproper region definitions.
+Character string identifying regions predefined by the \link[oceanmap]{region_definitions}-dataset, Raster* or Extent object (corresponds to \code{v_area} of the \link[oceanmap]{v}-function). If missing, region is derived from geographical coordinates, denoted by lat and lon. See \link[oceanmap]{add.region} to define new region definitions and \link[oceanmap]{delete.region} to delete unproper region definitions.
 }
   \item{fixedrange}{
 Vector returning longitude coordinates of the area to be plotted.
@@ -22,13 +22,13 @@ Vector returning longitude coordinates of the area to be plotted.
 whether a grid should be plotted (default is \code{TRUE})
 }
   \item{expand}{
-By default, the underlying \link{ggplotly}-function does not stick to the plotting region of the ggobj, but extends it. This can result in missing countries or islands. The \code{expand}-argument extends the plotly-plotting window in each direction in order to cover the corresponding landmasks.)
+By default, the underlying \link[plotly]{ggplotly}-function does not stick to the plotting region of the ggobj, but extends it. This can result in missing countries or islands. The \code{expand}-argument extends the plotly-plotting window in each direction in order to cover the corresponding landmasks.)
 }
 }
 \details{
 \code{ggoplotmaply} uses the \code{ggplotly} functions to convert the ggplot object into the plotly format.
 }
-\seealso{ \link{leaflet_geopos}, \code{\link{ggplot_geopos},  \link[oceanmap]{ggplotmap}, \link{ggplotly}} } 
+\seealso{ \link{leaflet_geopos}, \code{\link{ggplot_geopos},  \link[oceanmap]{ggplotmap}, \link[plotly]{ggplotly}} } 
 
 
 \author{

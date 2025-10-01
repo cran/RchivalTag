@@ -31,6 +31,5 @@ import("leaflet",except=c('addLegend'))
 import("leaflet.extras2")
 import("shiny")
 import("htmlwidgets")
-import("ggedit",except=c('%>%'))
 # Export all names
 exportPattern("^[^\\.]")

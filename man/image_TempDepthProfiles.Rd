@@ -46,7 +46,7 @@ character string indicating the x-axis label of the colorbar.
 }
 
 \item{pal}{
-color map to be plotted (default is \code{'jet'}). See \link{cmap} for available color maps.
+color map to be plotted (default is \code{'jet'}). See \link[oceanmap]{cmap} for available color maps.
 }
 
 \item{only.months, month.line}{
@@ -63,7 +63,7 @@ whether the axes and colorbar should be plotted.
 }
 
 \item{\dots}{
-additional arguments to be passed to \link{set.colorbarp}
+additional arguments to be passed to \link[oceanmap]{set.colorbarp}
 }
 
 }
